@@ -23,6 +23,7 @@
 html {
   font-size: 62.5%;
   box-sizing: border-box;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -123,10 +124,19 @@ img {
   padding: 0 6rem;
   z-index: 100;
 }
-
+@keyframes comeDown {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
 /* nav and stickly class at the same time */
 .nav.sticky {
   position: fixed;
+  animation: comeDown 0.3s ease-in;
+  animation-fill-mode: both;
   background-color: rgba(255, 255, 255, 0.95);
 }
 
@@ -177,6 +187,7 @@ img {
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow-x: hidden;
 }
 
 .header__title {
@@ -450,7 +461,7 @@ h4 {
   transition: all 0.5s;
 
   /* Only necessary when overlying images */
-  /* box-shadow: 0 0.6rem 1.5rem rgba(0, 0, 0, 0.7); */
+  box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.7);
 }
 
 .dots__dot:last-child {
@@ -459,7 +470,7 @@ h4 {
 
 .dots__dot--active {
   /* background-color: #fff; */
-  background-color: #888;
+  background-color: var(--color-primary-darker);
   opacity: 1;
 }
 
@@ -666,7 +677,8 @@ h4 {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
-  width: 100%;
+  width: 100vw;
+  padding: 1rem 0;
   background-color: white;
   color: #bbb;
   font-size: 1.5rem;
