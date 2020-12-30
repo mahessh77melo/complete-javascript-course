@@ -7,8 +7,10 @@
     <title>Data Structures and Modern Operators</title>
     <style>
       body {
+        overflow: hidden;
         height: 100vh;
         display: flex;
+        flex-direction: column;
         align-items: center;
         background: linear-gradient(to top left, #28b487, #7dd56f);
       }
@@ -22,18 +24,38 @@
         color: white;
       }
       button {
-        width: 50px;
-        height: 20px;
-        margin: 10px;
+        padding: 20px;
+        background-color: white;
+        box-shadow: 0 0.7rem 1rem rgba(0, 0, 0, 0.4);
+        font-size: 16px;
+        margin: 0 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      button:hover {
+        transform: translateY(-4px);
+      }
+      button:active {
+        box-shadow: 0 0.4rem 0.6rem rgba(0, 0, 0, 0.6);
+        transform: translateY(2px);
       }
       textarea {
-        width: 300px;
+        width: 250px;
+        font-size: 20px;
+        font-family: 'Fira Code', 'Courier New', Courier, monospace;
         height: 100px;
       }
     </style>
   </head>
   <body>
     <h1>Data Structures and Modern Operators</h1>
-    <script src="script.js"></script>
+    <div class="">
+      <textarea value="" name="name" id="name" cols="30" rows="10"></textarea>
+      <button class="btn-camel">Convert to Camel Case</button>
+      <button class="btn-snake">Convert to Snake Case</button>
+    </div>
+    <script src="strings.js"></script>
   </body>
 </html>
