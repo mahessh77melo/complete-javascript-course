@@ -1,15 +1,13 @@
+import { RECIPE_URL } from './config';
+import { getJSON } from './helpers';
+
 export const state = {
   recipe: {},
 };
 export const loadRecipe = async function (id) {
   try {
-    const res = await fetch(
-      `https://forkify-api.herokuapp.com/api/v2/recipes/${id}`
-    );
-    const data = await res.json();
+    const data = await getJSON(`${RECIPE_URL}${id}`);
     const obj = data.data.recipe;
-    // throw an error if the resulting object is not what we expected
-    if (!res.ok) throw new Error(`${data.message} (${res.status})`);
     //  altering the property names
     state.recipe = {
       id: obj.id,
