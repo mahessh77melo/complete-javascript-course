@@ -490,11 +490,15 @@ const controlRecipes = async function () {
 
     _recipeView.default.render(_model.state.recipe);
   } catch (error) {
-    alert(error);
+    _recipeView.default.renderError();
   }
 };
 
-['hashchange', 'load'].forEach(e => window.addEventListener(e, controlRecipes));
+const init = function () {
+  _recipeView.default.addHandlerRender(controlRecipes);
+};
+
+init();
 },{"url:../img/icons.svg":"496abfd48186586af05dd10da4c95455","core-js/modules/es.typed-array.float32-array.js":"d5ed5e3a2e200dcf66c948e6350ae29c","core-js/modules/es.typed-array.float64-array.js":"49914eeba57759547672886c5961b9e4","core-js/modules/es.typed-array.int8-array.js":"1fc9d0d9e9c4ca72873ee75cc9532911","core-js/modules/es.typed-array.int16-array.js":"6ba53210946e69387b5af65ca70f5602","core-js/modules/es.typed-array.int32-array.js":"52f07ad61480c3da8b1b371346f2b755","core-js/modules/es.typed-array.uint8-array.js":"6042ea91f038c74624be740ff17090b9","core-js/modules/es.typed-array.uint8-clamped-array.js":"47e53ff27a819e98075783d2516842bf","core-js/modules/es.typed-array.uint16-array.js":"20f511ab1a5fbdd3a99ff1f471adbc30","core-js/modules/es.typed-array.uint32-array.js":"8212db3659c5fe8bebc2163b12c9f547","core-js/modules/es.typed-array.from.js":"183d72778e0f99cedb12a04e35ea2d50","core-js/modules/es.typed-array.of.js":"2ee3ec99d0b3dea4fec9002159200789","core-js/modules/web.immediate.js":"140df4f8e97a45c53c66fead1f5a9e92","core-js/modules/web.url.js":"a66c25e402880ea6b966ee8ece30b6df","core-js/modules/web.url.to-json.js":"6357c5a053a36e38c0e24243e550dd86","core-js/modules/web.url-search-params.js":"2494aebefd4ca447de0ef4cfdd47509e","./model":"aabf248f40f7693ef84a0cb99f385d1f","./views/recipeView":"bcae1aced0301b01ccacb3e6f7dfede8"}],"496abfd48186586af05dd10da4c95455":[function(require,module,exports) {
 module.exports = require('./bundle-url').getBundleURL() + require('./relative-path')("0f8f2f421e09ad4e", "48e529aa8d27e525");
 },{"./bundle-url":"2146da1905b95151ed14d455c784e7b7","./relative-path":"1b9943ef25c7bbdf0dd1b9fa91880a6c"}],"2146da1905b95151ed14d455c784e7b7":[function(require,module,exports) {
@@ -5172,7 +5176,8 @@ const loadRecipe = async function (id) {
     };
     console.log(state.recipe);
   } catch (error) {
-    alert(error);
+    console.log(error);
+    throw error;
   }
 };
 
@@ -5226,7 +5231,7 @@ const getJSON = async function (url) {
 };
 
 exports.getJSON = getJSON;
-},{"./config":"09212d541c5c40ff2bd93475a904f8de","regenerator-runtime":"e155e0d3930b156f86c48e8d05522b16"}],"e155e0d3930b156f86c48e8d05522b16":[function(require,module,exports) {
+},{"regenerator-runtime":"e155e0d3930b156f86c48e8d05522b16","./config":"09212d541c5c40ff2bd93475a904f8de"}],"e155e0d3930b156f86c48e8d05522b16":[function(require,module,exports) {
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  *
@@ -5998,6 +6003,8 @@ function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = p
 
 var _parentElement = new WeakMap();
 
+var _errorMessage = new WeakMap();
+
 var _data = new WeakMap();
 
 var _clear = new WeakSet();
@@ -6019,6 +6026,11 @@ class RecipeView {
       value: document.querySelector('.recipe')
     });
 
+    _errorMessage.set(this, {
+      writable: true,
+      value: 'No search results for your query!'
+    });
+
     _data.set(this, {
       writable: true,
       value: void 0
@@ -6037,6 +6049,11 @@ class RecipeView {
     _classPrivateFieldGet(this, _parentElement).insertAdjacentHTML('beforeend', markup);
   }
 
+  addHandlerRender(handler) {
+    ['hashchange', 'load'].forEach(e => window.addEventListener(e, handler));
+  } // loading spinner
+
+
   renderSpinner() {
     _classPrivateMethodGet(this, _clear, _clear2).call(this);
 
@@ -6048,6 +6065,24 @@ class RecipeView {
         </div> `;
 
     _classPrivateFieldGet(this, _parentElement).insertAdjacentHTML('afterbegin', spinnerMarkup);
+  } // error message
+
+
+  renderError(message = _classPrivateFieldGet(this, _errorMessage)) {
+    _classPrivateMethodGet(this, _clear, _clear2).call(this);
+
+    const errorMarkup = `
+      <div class="error">
+        <div>
+          <svg>
+            <use href="${_icons.default}#icon-alert-triangle"></use>
+          </svg>
+        </div>
+        <p>${message} Please try again!</p>
+      </div>
+    `;
+
+    _classPrivateFieldGet(this, _parentElement).insertAdjacentHTML('afterbegin', errorMarkup);
   }
 
 }

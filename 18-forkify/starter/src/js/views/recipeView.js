@@ -2,8 +2,12 @@ import icons from 'url:../../img/icons.svg';
 import { Fraction } from 'fractional';
 
 class RecipeView {
+  // private variables
   #parentElement = document.querySelector('.recipe');
+  #errorMessage = 'No search results for your query!';
   #data;
+
+  // parent function for UI rendering
   render(data) {
     this.#data = data;
     const markup = this.#generateMarkup();
@@ -12,9 +16,18 @@ class RecipeView {
     // inserting the markup without ingredients
     this.#parentElement.insertAdjacentHTML('beforeend', markup);
   }
+
+  // clearing the parent element (recipe container)
   #clear() {
     this.#parentElement.innerHTML = '';
   }
+
+  // listening for DOM events
+  addHandlerRender(handler) {
+    ['hashchange', 'load'].forEach(e => window.addEventListener(e, handler));
+  }
+
+  // loading spinner
   renderSpinner() {
     this.#clear();
     const spinnerMarkup = `
@@ -25,6 +38,24 @@ class RecipeView {
         </div> `;
     this.#parentElement.insertAdjacentHTML('afterbegin', spinnerMarkup);
   }
+
+  // error message
+  renderError(message = this.#errorMessage) {
+    this.#clear();
+    const errorMarkup = `
+      <div class="error">
+        <div>
+          <svg>
+            <use href="${icons}#icon-alert-triangle"></use>
+          </svg>
+        </div>
+        <p>${message} Please try again!</p>
+      </div>
+    `;
+    this.#parentElement.insertAdjacentHTML('afterbegin', errorMarkup);
+  }
+
+  // generating the main markup for the recipe
   #generateMarkup() {
     const recipe = this.#data;
     return `
@@ -111,6 +142,8 @@ class RecipeView {
         </div>
     `;
   }
+
+  // callback for the map function
   #generateIngredientMarkup(ing) {
     return `<li class="recipe__ingredient">
               <svg class="recipe__icon">
@@ -127,4 +160,5 @@ class RecipeView {
   }
 }
 
+// exporting an object instead of exporting the class
 export default new RecipeView();
