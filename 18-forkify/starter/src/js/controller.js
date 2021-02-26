@@ -1,11 +1,14 @@
-import { state, loadRecipe } from './model';
+import { state, loadRecipe, loadSearchResults } from './model';
 import recipeView from './views/recipeView';
 import icons from 'url:../img/icons.svg'; // parcel 2 import
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
+import resultsView from './views/resultsView';
 
 // code begins
 const recipeContainer = document.querySelector('.recipe');
+const searchBtn = document.querySelector('.search__btn');
+const searchForm = document.querySelector('.search');
 
 const controlRecipes = async function () {
   try {
@@ -25,7 +28,24 @@ const controlRecipes = async function () {
   }
 };
 
+const controlSearchResults = async function () {
+  try {
+    const query = resultsView.getQuery();
+    if (!query) return;
+    // loading the results
+    await loadSearchResults(query);
+    // render to the UI
+    state.search.results.length > 0
+      ? resultsView.renderResults(state.search.results)
+      : resultsView.renderError();
+  } catch (error) {
+    resultsView.renderError('There was a network error.');
+  }
+};
+
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);
+  searchBtn.addEventListener('click', controlSearchResults);
+  searchForm.addEventListener('submit', controlSearchResults);
 };
 init();

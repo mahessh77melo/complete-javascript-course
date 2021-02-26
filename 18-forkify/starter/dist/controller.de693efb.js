@@ -473,10 +473,14 @@ var _recipeView = _interopRequireDefault(require("./views/recipeView"));
 
 var _icons = _interopRequireDefault(require("url:../img/icons.svg"));
 
+var _resultsView = _interopRequireDefault(require("./views/resultsView"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // code begins
 const recipeContainer = document.querySelector('.recipe');
+const searchBtn = document.querySelector('.search__btn');
+const searchForm = document.querySelector('.search');
 
 const controlRecipes = async function () {
   try {
@@ -494,12 +498,29 @@ const controlRecipes = async function () {
   }
 };
 
+const controlSearchResults = async function () {
+  try {
+    const query = _resultsView.default.getQuery();
+
+    if (!query) return; // loading the results
+
+    await (0, _model.loadSearchResults)(query); // render to the UI
+
+    _model.state.search.results.length > 0 ? _resultsView.default.renderResults(_model.state.search.results) : _resultsView.default.renderError();
+  } catch (error) {
+    _resultsView.default.renderError('There was a network error.');
+  }
+};
+
 const init = function () {
   _recipeView.default.addHandlerRender(controlRecipes);
+
+  searchBtn.addEventListener('click', controlSearchResults);
+  searchForm.addEventListener('submit', controlSearchResults);
 };
 
 init();
-},{"url:../img/icons.svg":"496abfd48186586af05dd10da4c95455","core-js/modules/es.typed-array.float32-array.js":"d5ed5e3a2e200dcf66c948e6350ae29c","core-js/modules/es.typed-array.float64-array.js":"49914eeba57759547672886c5961b9e4","core-js/modules/es.typed-array.int8-array.js":"1fc9d0d9e9c4ca72873ee75cc9532911","core-js/modules/es.typed-array.int16-array.js":"6ba53210946e69387b5af65ca70f5602","core-js/modules/es.typed-array.int32-array.js":"52f07ad61480c3da8b1b371346f2b755","core-js/modules/es.typed-array.uint8-array.js":"6042ea91f038c74624be740ff17090b9","core-js/modules/es.typed-array.uint8-clamped-array.js":"47e53ff27a819e98075783d2516842bf","core-js/modules/es.typed-array.uint16-array.js":"20f511ab1a5fbdd3a99ff1f471adbc30","core-js/modules/es.typed-array.uint32-array.js":"8212db3659c5fe8bebc2163b12c9f547","core-js/modules/es.typed-array.from.js":"183d72778e0f99cedb12a04e35ea2d50","core-js/modules/es.typed-array.of.js":"2ee3ec99d0b3dea4fec9002159200789","core-js/modules/web.immediate.js":"140df4f8e97a45c53c66fead1f5a9e92","core-js/modules/web.url.js":"a66c25e402880ea6b966ee8ece30b6df","core-js/modules/web.url.to-json.js":"6357c5a053a36e38c0e24243e550dd86","core-js/modules/web.url-search-params.js":"2494aebefd4ca447de0ef4cfdd47509e","./model":"aabf248f40f7693ef84a0cb99f385d1f","./views/recipeView":"bcae1aced0301b01ccacb3e6f7dfede8"}],"496abfd48186586af05dd10da4c95455":[function(require,module,exports) {
+},{"url:../img/icons.svg":"496abfd48186586af05dd10da4c95455","core-js/modules/es.typed-array.float32-array.js":"d5ed5e3a2e200dcf66c948e6350ae29c","core-js/modules/es.typed-array.float64-array.js":"49914eeba57759547672886c5961b9e4","core-js/modules/es.typed-array.int8-array.js":"1fc9d0d9e9c4ca72873ee75cc9532911","core-js/modules/es.typed-array.int16-array.js":"6ba53210946e69387b5af65ca70f5602","core-js/modules/es.typed-array.int32-array.js":"52f07ad61480c3da8b1b371346f2b755","core-js/modules/es.typed-array.uint8-array.js":"6042ea91f038c74624be740ff17090b9","core-js/modules/es.typed-array.uint8-clamped-array.js":"47e53ff27a819e98075783d2516842bf","core-js/modules/es.typed-array.uint16-array.js":"20f511ab1a5fbdd3a99ff1f471adbc30","core-js/modules/es.typed-array.uint32-array.js":"8212db3659c5fe8bebc2163b12c9f547","core-js/modules/es.typed-array.from.js":"183d72778e0f99cedb12a04e35ea2d50","core-js/modules/es.typed-array.of.js":"2ee3ec99d0b3dea4fec9002159200789","core-js/modules/web.immediate.js":"140df4f8e97a45c53c66fead1f5a9e92","core-js/modules/web.url.js":"a66c25e402880ea6b966ee8ece30b6df","core-js/modules/web.url.to-json.js":"6357c5a053a36e38c0e24243e550dd86","core-js/modules/web.url-search-params.js":"2494aebefd4ca447de0ef4cfdd47509e","./model":"aabf248f40f7693ef84a0cb99f385d1f","./views/recipeView":"bcae1aced0301b01ccacb3e6f7dfede8","./views/resultsView":"eacdbc0d50ee3d2819f3ee59366c2773"}],"496abfd48186586af05dd10da4c95455":[function(require,module,exports) {
 module.exports = require('./bundle-url').getBundleURL() + require('./relative-path')("0f8f2f421e09ad4e", "48e529aa8d27e525");
 },{"./bundle-url":"2146da1905b95151ed14d455c784e7b7","./relative-path":"1b9943ef25c7bbdf0dd1b9fa91880a6c"}],"2146da1905b95151ed14d455c784e7b7":[function(require,module,exports) {
 "use strict";
@@ -5148,31 +5169,35 @@ $({ target: 'URL', proto: true, enumerable: true }, {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.loadRecipe = exports.state = void 0;
+exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
 
 var _config = require("./config");
 
 var _helpers = require("./helpers");
 
 const state = {
-  recipe: {}
+  recipe: {},
+  search: {
+    query: '',
+    results: []
+  }
 };
 exports.state = state;
 
 const loadRecipe = async function (id) {
   try {
-    const data = await (0, _helpers.getJSON)(`${_config.RECIPE_URL}${id}`);
+    const data = await (0, _helpers.getJSON)(`${_config.RECIPE_URL}/${id}`);
     const obj = data.data.recipe; //  altering the property names
 
     state.recipe = {
       id: obj.id,
+      title: obj.title,
       image: obj.image_url,
+      publisher: obj.publisher,
       cookingTime: obj.cooking_time,
       url: obj.source_url,
-      publisher: obj.publisher,
       ingredients: obj.ingredients,
-      servings: obj.servings,
-      title: obj.title
+      servings: obj.servings
     };
     console.log(state.recipe);
   } catch (error) {
@@ -5182,6 +5207,23 @@ const loadRecipe = async function (id) {
 };
 
 exports.loadRecipe = loadRecipe;
+
+const loadSearchResults = async function (query) {
+  try {
+    const results = await (0, _helpers.getJSON)(`${_config.RECIPE_URL}?search=${query}`);
+    state.search.query = query;
+    state.search.results = results.data.recipes.map(rec => ({
+      id: rec.id,
+      title: rec.title,
+      image: rec.image_url,
+      publisher: rec.publisher
+    }));
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.loadSearchResults = loadSearchResults;
 },{"./config":"09212d541c5c40ff2bd93475a904f8de","./helpers":"0e8dcd8a4e1c61cf18f78e1c2563655d"}],"09212d541c5c40ff2bd93475a904f8de":[function(require,module,exports) {
 "use strict";
 
@@ -5189,7 +5231,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.TIMEOUT_SEC = exports.API_LINK = exports.API_KEY = exports.RECIPE_URL = void 0;
-const RECIPE_URL = 'https://forkify-api.herokuapp.com/api/v2/recipes/';
+const RECIPE_URL = 'https://forkify-api.herokuapp.com/api/v2/recipes';
 exports.RECIPE_URL = RECIPE_URL;
 const API_KEY = '1b72ce05-f020-4c6a-a734-4303be611a13';
 exports.API_KEY = API_KEY;
@@ -6037,6 +6079,7 @@ class RecipeView {
     });
   }
 
+  // parent function for UI rendering
   render(data) {
     _classPrivateFieldSet(this, _data, data);
 
@@ -6047,8 +6090,10 @@ class RecipeView {
 
 
     _classPrivateFieldGet(this, _parentElement).insertAdjacentHTML('beforeend', markup);
-  }
+  } // clearing the parent element (recipe container)
 
+
+  // listening for DOM events
   addHandlerRender(handler) {
     ['hashchange', 'load'].forEach(e => window.addEventListener(e, handler));
   } // loading spinner
@@ -6083,9 +6128,11 @@ class RecipeView {
     `;
 
     _classPrivateFieldGet(this, _parentElement).insertAdjacentHTML('afterbegin', errorMarkup);
-  }
+  } // generating the main markup for the recipe
 
-}
+
+} // exporting an object instead of exporting the class
+
 
 var _clear2 = function _clear2() {
   _classPrivateFieldGet(this, _parentElement).innerHTML = '';
@@ -6556,6 +6603,108 @@ Fraction.primeFactors = function(n)
 
 module.exports.Fraction = Fraction
 
-},{}]},{},["ef07c0b099827f19f5a5689b731b9164","d09782a30363f48df98288c499824160","175e469a7ea7db1c8c0744d04372621f"], null)
+},{}],"eacdbc0d50ee3d2819f3ee59366c2773":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _icons = _interopRequireDefault(require("url:../../img/icons.svg"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classPrivateMethodGet(receiver, privateSet, fn) { if (!privateSet.has(receiver)) { throw new TypeError("attempted to get private field on non-instance"); } return fn; }
+
+function _classPrivateFieldGet(receiver, privateMap) { var descriptor = privateMap.get(receiver); if (!descriptor) { throw new TypeError("attempted to get private field on non-instance"); } if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
+
+var _resultsContainer = new WeakMap();
+
+var _searchField = new WeakMap();
+
+var _errorMessage = new WeakMap();
+
+var _clear = new WeakSet();
+
+class ResultsView {
+  constructor() {
+    _clear.add(this);
+
+    _resultsContainer.set(this, {
+      writable: true,
+      value: document.querySelector('.results')
+    });
+
+    _searchField.set(this, {
+      writable: true,
+      value: document.querySelector('.search__field')
+    });
+
+    _errorMessage.set(this, {
+      writable: true,
+      value: 'No search results for your query!'
+    });
+  }
+
+  getQuery() {
+    return _classPrivateFieldGet(this, _searchField).value;
+  }
+
+  renderError(message = _classPrivateFieldGet(this, _errorMessage)) {
+    _classPrivateMethodGet(this, _clear, _clear2).call(this);
+
+    const errorMarkup = `
+      <div class="error">
+        <div>
+          <svg>
+            <use href="${_icons.default}#icon-alert-triangle"></use>
+          </svg>
+        </div>
+        <p>${message} Please try again!</p>
+      </div>
+    `;
+
+    _classPrivateFieldGet(this, _resultsContainer).insertAdjacentHTML('afterbegin', errorMarkup);
+  }
+
+  renderResults(recipes) {
+    _classPrivateMethodGet(this, _clear, _clear2).call(this);
+
+    recipes.forEach(rec => {
+      const markup = `
+					<li class="preview">
+            <a class="preview__link" href="#${rec.id}">
+              <figure class="preview__fig">
+                <img src="${rec.image}" alt="${rec.title}" />
+              </figure>
+              <div class="preview__data">
+                <h4 class="preview__title">${rec.title}</h4>
+                <p class="preview__publisher">${rec.publisher}</p>
+                <div class="preview__user-generated">
+                  <svg>
+                    <use href="${_icons.default}#icon-user"></use>
+                  </svg>
+                </div>
+              </div>
+            </a>
+          </li>
+		`;
+
+      _classPrivateFieldGet(this, _resultsContainer).insertAdjacentHTML('beforeend', markup);
+    });
+  }
+
+}
+
+var _clear2 = function _clear2() {
+  _classPrivateFieldGet(this, _searchField).value = '';
+  _classPrivateFieldGet(this, _resultsContainer).innerHTML = '';
+};
+
+var _default = new ResultsView();
+
+exports.default = _default;
+},{"url:../../img/icons.svg":"496abfd48186586af05dd10da4c95455"}]},{},["ef07c0b099827f19f5a5689b731b9164","d09782a30363f48df98288c499824160","175e469a7ea7db1c8c0744d04372621f"], null)
 
 //# sourceMappingURL=controller.de693efb.js.map
