@@ -475,6 +475,8 @@ var _icons = _interopRequireDefault(require("url:../img/icons.svg"));
 
 var _resultsView = _interopRequireDefault(require("./views/resultsView"));
 
+var _paginationView = _interopRequireDefault(require("./views/paginationView"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // code begins
@@ -503,16 +505,29 @@ const controlSearchResults = async function (e) {
     // very important to prevent the default action
     e.preventDefault();
 
-    const query = _resultsView.default.getQuery();
+    const query = _resultsView.default.getQuery(); // if there is now query, end the function
+
 
     if (!query) return; // loading the results
 
     await (0, _model.loadSearchResults)(query); // render to the UI
 
-    _model.state.search.results.length > 0 ? _resultsView.default.renderResults(_model.state.search.results) : _resultsView.default.renderError();
+    _model.state.search.results.length > 0 ? _resultsView.default.renderResults((0, _model.loadSearchResultPage)(_model.state.search.page)) : _resultsView.default.renderError(); // render the pagination buttons
+
+    _paginationView.default.renderButtons(_model.state.search.page, _model.state.search.results.length);
+
+    _paginationView.default.addButtonHandlers(_model.alterPage, controlPagination);
   } catch (error) {
+    console.log(error);
+
     _resultsView.default.renderError(error.message);
   }
+};
+
+const controlPagination = function () {
+  _resultsView.default.renderResults((0, _model.loadSearchResultPage)(_model.state.search.page));
+
+  _paginationView.default.renderButtons(_model.state.search.page, _model.state.search.results.length);
 };
 
 const init = function () {
@@ -523,7 +538,7 @@ const init = function () {
 };
 
 init();
-},{"url:../img/icons.svg":"496abfd48186586af05dd10da4c95455","core-js/modules/es.typed-array.float32-array.js":"d5ed5e3a2e200dcf66c948e6350ae29c","core-js/modules/es.typed-array.float64-array.js":"49914eeba57759547672886c5961b9e4","core-js/modules/es.typed-array.int8-array.js":"1fc9d0d9e9c4ca72873ee75cc9532911","core-js/modules/es.typed-array.int16-array.js":"6ba53210946e69387b5af65ca70f5602","core-js/modules/es.typed-array.int32-array.js":"52f07ad61480c3da8b1b371346f2b755","core-js/modules/es.typed-array.uint8-array.js":"6042ea91f038c74624be740ff17090b9","core-js/modules/es.typed-array.uint8-clamped-array.js":"47e53ff27a819e98075783d2516842bf","core-js/modules/es.typed-array.uint16-array.js":"20f511ab1a5fbdd3a99ff1f471adbc30","core-js/modules/es.typed-array.uint32-array.js":"8212db3659c5fe8bebc2163b12c9f547","core-js/modules/es.typed-array.from.js":"183d72778e0f99cedb12a04e35ea2d50","core-js/modules/es.typed-array.of.js":"2ee3ec99d0b3dea4fec9002159200789","core-js/modules/web.immediate.js":"140df4f8e97a45c53c66fead1f5a9e92","core-js/modules/web.url.js":"a66c25e402880ea6b966ee8ece30b6df","core-js/modules/web.url.to-json.js":"6357c5a053a36e38c0e24243e550dd86","core-js/modules/web.url-search-params.js":"2494aebefd4ca447de0ef4cfdd47509e","./model":"aabf248f40f7693ef84a0cb99f385d1f","./views/recipeView":"bcae1aced0301b01ccacb3e6f7dfede8","./views/resultsView":"eacdbc0d50ee3d2819f3ee59366c2773"}],"496abfd48186586af05dd10da4c95455":[function(require,module,exports) {
+},{"url:../img/icons.svg":"496abfd48186586af05dd10da4c95455","core-js/modules/es.typed-array.float32-array.js":"d5ed5e3a2e200dcf66c948e6350ae29c","core-js/modules/es.typed-array.float64-array.js":"49914eeba57759547672886c5961b9e4","core-js/modules/es.typed-array.int8-array.js":"1fc9d0d9e9c4ca72873ee75cc9532911","core-js/modules/es.typed-array.int16-array.js":"6ba53210946e69387b5af65ca70f5602","core-js/modules/es.typed-array.int32-array.js":"52f07ad61480c3da8b1b371346f2b755","core-js/modules/es.typed-array.uint8-array.js":"6042ea91f038c74624be740ff17090b9","core-js/modules/es.typed-array.uint8-clamped-array.js":"47e53ff27a819e98075783d2516842bf","core-js/modules/es.typed-array.uint16-array.js":"20f511ab1a5fbdd3a99ff1f471adbc30","core-js/modules/es.typed-array.uint32-array.js":"8212db3659c5fe8bebc2163b12c9f547","core-js/modules/es.typed-array.from.js":"183d72778e0f99cedb12a04e35ea2d50","core-js/modules/es.typed-array.of.js":"2ee3ec99d0b3dea4fec9002159200789","core-js/modules/web.immediate.js":"140df4f8e97a45c53c66fead1f5a9e92","core-js/modules/web.url.js":"a66c25e402880ea6b966ee8ece30b6df","core-js/modules/web.url.to-json.js":"6357c5a053a36e38c0e24243e550dd86","core-js/modules/web.url-search-params.js":"2494aebefd4ca447de0ef4cfdd47509e","./model":"aabf248f40f7693ef84a0cb99f385d1f","./views/recipeView":"bcae1aced0301b01ccacb3e6f7dfede8","./views/resultsView":"eacdbc0d50ee3d2819f3ee59366c2773","./views/paginationView":"d2063f3e7de2e4cdacfcb5eb6479db05"}],"496abfd48186586af05dd10da4c95455":[function(require,module,exports) {
 module.exports = require('./bundle-url').getBundleURL() + require('./relative-path')("0f8f2f421e09ad4e", "48e529aa8d27e525");
 },{"./bundle-url":"2146da1905b95151ed14d455c784e7b7","./relative-path":"1b9943ef25c7bbdf0dd1b9fa91880a6c"}],"2146da1905b95151ed14d455c784e7b7":[function(require,module,exports) {
 "use strict";
@@ -5172,7 +5187,7 @@ $({ target: 'URL', proto: true, enumerable: true }, {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
+exports.alterPage = exports.loadSearchResultPage = exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
 
 var _config = require("./config");
 
@@ -5182,7 +5197,8 @@ const state = {
   recipe: {},
   search: {
     query: '',
-    results: []
+    results: [],
+    page: 1
   }
 };
 exports.state = state;
@@ -5215,6 +5231,7 @@ const loadSearchResults = async function (query) {
   try {
     const results = await (0, _helpers.getJSON)(`${_config.RECIPE_URL}?search=${query}`);
     state.search.query = query;
+    state.search.page = 1;
     state.search.results = results.data.recipes.map(rec => ({
       id: rec.id,
       title: rec.title,
@@ -5228,13 +5245,28 @@ const loadSearchResults = async function (query) {
 };
 
 exports.loadSearchResults = loadSearchResults;
+
+const loadSearchResultPage = function (page = state.search.page) {
+  const start = (page - 1) * _config.RESULTS_PER_PAGE;
+  const end = page * _config.RESULTS_PER_PAGE;
+  return state.search.results.slice(start, end);
+};
+
+exports.loadSearchResultPage = loadSearchResultPage;
+
+const alterPage = function (num) {
+  state.search.page = parseInt(num);
+  console.log(state.search);
+};
+
+exports.alterPage = alterPage;
 },{"./config":"09212d541c5c40ff2bd93475a904f8de","./helpers":"0e8dcd8a4e1c61cf18f78e1c2563655d"}],"09212d541c5c40ff2bd93475a904f8de":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.TIMEOUT_SEC = exports.API_LINK = exports.API_KEY = exports.RECIPE_URL = void 0;
+exports.RESULTS_PER_PAGE = exports.TIMEOUT_SEC = exports.API_LINK = exports.API_KEY = exports.RECIPE_URL = void 0;
 const RECIPE_URL = 'https://forkify-api.herokuapp.com/api/v2/recipes';
 exports.RECIPE_URL = RECIPE_URL;
 const API_KEY = '1b72ce05-f020-4c6a-a734-4303be611a13';
@@ -5243,6 +5275,8 @@ const API_LINK = 'https://forkify-api.herokuapp.com/v2';
 exports.API_LINK = API_LINK;
 const TIMEOUT_SEC = 6;
 exports.TIMEOUT_SEC = TIMEOUT_SEC;
+const RESULTS_PER_PAGE = 10;
+exports.RESULTS_PER_PAGE = RESULTS_PER_PAGE;
 },{}],"0e8dcd8a4e1c61cf18f78e1c2563655d":[function(require,module,exports) {
 "use strict";
 
@@ -6709,6 +6743,94 @@ var _clear2 = function _clear2() {
 var _default = new ResultsView();
 
 exports.default = _default;
-},{"url:../../img/icons.svg":"496abfd48186586af05dd10da4c95455"}]},{},["ef07c0b099827f19f5a5689b731b9164","d09782a30363f48df98288c499824160","175e469a7ea7db1c8c0744d04372621f"], null)
+},{"url:../../img/icons.svg":"496abfd48186586af05dd10da4c95455"}],"d2063f3e7de2e4cdacfcb5eb6479db05":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _icons = _interopRequireDefault(require("url:../../img/icons.svg"));
+
+var _config = require("../config");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classPrivateMethodGet(receiver, privateSet, fn) { if (!privateSet.has(receiver)) { throw new TypeError("attempted to get private field on non-instance"); } return fn; }
+
+function _classPrivateFieldGet(receiver, privateMap) { var descriptor = privateMap.get(receiver); if (!descriptor) { throw new TypeError("attempted to get private field on non-instance"); } if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
+
+var _parentElement = new WeakMap();
+
+var _clear = new WeakSet();
+
+class PaginationView {
+  constructor() {
+    _clear.add(this);
+
+    _parentElement.set(this, {
+      writable: true,
+      value: document.querySelector('.pagination')
+    });
+  }
+
+  addButtonHandlers(handler, refresh) {
+    _classPrivateFieldGet(this, _parentElement).addEventListener('click', e => {
+      const button = e.target.closest('.btn--inline');
+      if (!button) return;
+      handler(button.dataset.goto);
+      refresh();
+    });
+  }
+
+  renderButtons(page, resultsLength) {
+    // clearing the old UI
+    _classPrivateMethodGet(this, _clear, _clear2).call(this); // markup for prev page button
+
+
+    const markupLeft = `
+					<button data-goto="${page - 1}" class="btn--inline pagination__btn--prev">
+            <svg class="search__icon">
+              <use href="${_icons.default}#icon-arrow-left"></use>
+            </svg>
+            <span>Page ${page - 1}</span>
+          </button>
+		`; // markup for next page button
+
+    const markupRight = `	
+          <button data-goto="${page + 1}" class="btn--inline pagination__btn--next">
+            <span>Page ${page + 1}</span>
+            <svg class="search__icon">
+              <use href="${_icons.default}#icon-arrow-right"></use>
+            </svg>
+          </button>
+		`; // logic for final markup
+
+    let finalMarkup;
+    const lastPage = Math.ceil(resultsLength / _config.RESULTS_PER_PAGE);
+    console.log(lastPage);
+
+    if (page === 1) {
+      finalMarkup = markupRight;
+    } else if (page === lastPage && lastPage > 1) {
+      finalMarkup = markupLeft;
+    } else {
+      finalMarkup = markupLeft + markupRight;
+    }
+
+    _classPrivateFieldGet(this, _parentElement).insertAdjacentHTML('afterbegin', finalMarkup);
+  }
+
+}
+
+var _clear2 = function _clear2() {
+  _classPrivateFieldGet(this, _parentElement).innerHTML = '';
+};
+
+var _default = new PaginationView();
+
+exports.default = _default;
+},{"url:../../img/icons.svg":"496abfd48186586af05dd10da4c95455","../config":"09212d541c5c40ff2bd93475a904f8de"}]},{},["ef07c0b099827f19f5a5689b731b9164","d09782a30363f48df98288c499824160","175e469a7ea7db1c8c0744d04372621f"], null)
 
 //# sourceMappingURL=controller.de693efb.js.map

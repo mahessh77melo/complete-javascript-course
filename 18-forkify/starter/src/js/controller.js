@@ -1,9 +1,16 @@
-import { state, loadRecipe, loadSearchResults } from './model';
+import {
+  state,
+  loadRecipe,
+  loadSearchResults,
+  loadSearchResultPage,
+  alterPage,
+} from './model';
 import recipeView from './views/recipeView';
 import icons from 'url:../img/icons.svg'; // parcel 2 import
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import resultsView from './views/resultsView';
+import paginationView from './views/paginationView';
 
 // code begins
 const recipeContainer = document.querySelector('.recipe');
@@ -32,16 +39,29 @@ const controlSearchResults = async function (e) {
     // very important to prevent the default action
     e.preventDefault();
     const query = resultsView.getQuery();
+    // if there is now query, end the function
     if (!query) return;
     // loading the results
     await loadSearchResults(query);
     // render to the UI
     state.search.results.length > 0
-      ? resultsView.renderResults(state.search.results)
+      ? resultsView.renderResults(loadSearchResultPage(state.search.page))
       : resultsView.renderError();
+    // render the pagination buttons
+    paginationView.renderButtons(
+      state.search.page,
+      state.search.results.length
+    );
+    paginationView.addButtonHandlers(alterPage, controlPagination);
   } catch (error) {
+    console.log(error);
     resultsView.renderError(error.message);
   }
+};
+
+const controlPagination = function () {
+  resultsView.renderResults(loadSearchResultPage(state.search.page));
+  paginationView.renderButtons(state.search.page, state.search.results.length);
 };
 
 const init = function () {
