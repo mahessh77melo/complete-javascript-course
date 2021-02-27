@@ -484,11 +484,11 @@ const searchForm = document.querySelector('.search');
 
 const controlRecipes = async function () {
   try {
-    _recipeView.default.renderSpinner(recipeContainer); // FETCHING THE hash
-
-
-    const id = window.location.hash.slice(1);
+    // FETCHING THE hash
+    const id = window.location.hash?.slice(1);
     if (!id) return; // Loading the recipe (async function)
+
+    _recipeView.default.renderSpinner(recipeContainer);
 
     await (0, _model.loadRecipe)(id); // RENDERING THE RECIPE TO THE UI
 
@@ -498,8 +498,11 @@ const controlRecipes = async function () {
   }
 };
 
-const controlSearchResults = async function () {
+const controlSearchResults = async function (e) {
   try {
+    // very important to prevent the default action
+    e.preventDefault();
+
     const query = _resultsView.default.getQuery();
 
     if (!query) return; // loading the results
@@ -508,7 +511,7 @@ const controlSearchResults = async function () {
 
     _model.state.search.results.length > 0 ? _resultsView.default.renderResults(_model.state.search.results) : _resultsView.default.renderError();
   } catch (error) {
-    _resultsView.default.renderError('There was a network error.');
+    _resultsView.default.renderError(error.message);
   }
 };
 
@@ -5218,6 +5221,7 @@ const loadSearchResults = async function (query) {
       image: rec.image_url,
       publisher: rec.publisher
     }));
+    console.log(state.search);
   } catch (error) {
     throw error;
   }

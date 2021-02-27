@@ -40,6 +40,7 @@ export const loadSearchResults = async function (query) {
       image: rec.image_url,
       publisher: rec.publisher,
     }));
+    console.log(state.search);
   } catch (error) {
     throw error;
   }

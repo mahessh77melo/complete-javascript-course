@@ -12,13 +12,12 @@ const searchForm = document.querySelector('.search');
 
 const controlRecipes = async function () {
   try {
-    recipeView.renderSpinner(recipeContainer);
-
     // FETCHING THE hash
-    const id = window.location.hash.slice(1);
+    const id = window.location.hash?.slice(1);
     if (!id) return;
 
     // Loading the recipe (async function)
+    recipeView.renderSpinner(recipeContainer);
     await loadRecipe(id);
 
     // RENDERING THE RECIPE TO THE UI
@@ -28,8 +27,10 @@ const controlRecipes = async function () {
   }
 };
 
-const controlSearchResults = async function () {
+const controlSearchResults = async function (e) {
   try {
+    // very important to prevent the default action
+    e.preventDefault();
     const query = resultsView.getQuery();
     if (!query) return;
     // loading the results
@@ -39,7 +40,7 @@ const controlSearchResults = async function () {
       ? resultsView.renderResults(state.search.results)
       : resultsView.renderError();
   } catch (error) {
-    resultsView.renderError('There was a network error.');
+    resultsView.renderError(error.message);
   }
 };
 
