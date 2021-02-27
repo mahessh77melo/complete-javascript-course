@@ -13,7 +13,9 @@ class PaginationView {
     this.#parentElement.addEventListener('click', e => {
       const button = e.target.closest('.btn--inline');
       if (!button) return;
+      // calls the function that changes the page number
       handler(button.dataset.goto);
+      // refresh the UI
       refresh();
     });
   }
@@ -45,13 +47,17 @@ class PaginationView {
     const lastPage = Math.ceil(resultsLength / RESULTS_PER_PAGE);
     console.log(lastPage);
     if (page === 1) {
+      // first page
       finalMarkup = markupRight;
     } else if (page === lastPage && lastPage > 1) {
+      // last page
       finalMarkup = markupLeft;
     } else {
+      // other pages
       finalMarkup = markupLeft + markupRight;
     }
     this.#parentElement.insertAdjacentHTML('afterbegin', finalMarkup);
   }
 }
+// export an object of this class
 export default new PaginationView();

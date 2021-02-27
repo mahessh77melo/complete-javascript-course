@@ -52,6 +52,7 @@ const controlSearchResults = async function (e) {
       state.search.page,
       state.search.results.length
     );
+    // add the handlers once the UI is generated
     paginationView.addButtonHandlers(alterPage, controlPagination);
   } catch (error) {
     console.log(error);
@@ -59,11 +60,13 @@ const controlSearchResults = async function (e) {
   }
 };
 
+// function to refresh the pagination and search results accordingly
 const controlPagination = function () {
   resultsView.renderResults(loadSearchResultPage(state.search.page));
   paginationView.renderButtons(state.search.page, state.search.results.length);
 };
 
+// initially called function
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);
   searchBtn.addEventListener('click', controlSearchResults);

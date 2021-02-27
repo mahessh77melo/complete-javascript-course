@@ -12,6 +12,7 @@ class ResultsView {
     this.#resultsContainer.innerHTML = '';
   }
 
+  // called from catch block if an error occurs
   renderError(message = this.#errorMessage) {
     this.#clear();
     const errorMarkup = `
@@ -27,6 +28,7 @@ class ResultsView {
     this.#resultsContainer.insertAdjacentHTML('afterbegin', errorMarkup);
   }
 
+  // main function that generates the UI
   renderResults(recipes) {
     this.#clear();
     recipes.forEach(rec => {
@@ -52,4 +54,5 @@ class ResultsView {
     });
   }
 }
+// exporting an object of the class
 export default new ResultsView();

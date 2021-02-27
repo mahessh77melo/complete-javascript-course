@@ -514,7 +514,8 @@ const controlSearchResults = async function (e) {
 
     _model.state.search.results.length > 0 ? _resultsView.default.renderResults((0, _model.loadSearchResultPage)(_model.state.search.page)) : _resultsView.default.renderError(); // render the pagination buttons
 
-    _paginationView.default.renderButtons(_model.state.search.page, _model.state.search.results.length);
+    _paginationView.default.renderButtons(_model.state.search.page, _model.state.search.results.length); // add the handlers once the UI is generated
+
 
     _paginationView.default.addButtonHandlers(_model.alterPage, controlPagination);
   } catch (error) {
@@ -522,13 +523,15 @@ const controlSearchResults = async function (e) {
 
     _resultsView.default.renderError(error.message);
   }
-};
+}; // function to refresh the pagination and search results accordingly
+
 
 const controlPagination = function () {
   _resultsView.default.renderResults((0, _model.loadSearchResultPage)(_model.state.search.page));
 
   _paginationView.default.renderButtons(_model.state.search.page, _model.state.search.results.length);
-};
+}; // initially called function
+
 
 const init = function () {
   _recipeView.default.addHandlerRender(controlRecipes);
@@ -5229,9 +5232,12 @@ exports.loadRecipe = loadRecipe;
 
 const loadSearchResults = async function (query) {
   try {
-    const results = await (0, _helpers.getJSON)(`${_config.RECIPE_URL}?search=${query}`);
-    state.search.query = query;
-    state.search.page = 1;
+    const results = await (0, _helpers.getJSON)(`${_config.RECIPE_URL}?search=${query}`); // store the query for further use
+
+    state.search.query = query; // reset the page number
+
+    state.search.page = 1; // store the results in the state object
+
     state.search.results = results.data.recipes.map(rec => ({
       id: rec.id,
       title: rec.title,
@@ -5248,13 +5254,15 @@ exports.loadSearchResults = loadSearchResults;
 
 const loadSearchResultPage = function (page = state.search.page) {
   const start = (page - 1) * _config.RESULTS_PER_PAGE;
-  const end = page * _config.RESULTS_PER_PAGE;
+  const end = page * _config.RESULTS_PER_PAGE; // return the items according to the current page
+
   return state.search.results.slice(start, end);
 };
 
 exports.loadSearchResultPage = loadSearchResultPage;
 
 const alterPage = function (num) {
+  // alter the current page number
   state.search.page = parseInt(num);
   console.log(state.search);
 };
@@ -6689,6 +6697,7 @@ class ResultsView {
     return _classPrivateFieldGet(this, _searchField).value;
   }
 
+  // called from catch block if an error occurs
   renderError(message = _classPrivateFieldGet(this, _errorMessage)) {
     _classPrivateMethodGet(this, _clear, _clear2).call(this);
 
@@ -6704,7 +6713,8 @@ class ResultsView {
     `;
 
     _classPrivateFieldGet(this, _resultsContainer).insertAdjacentHTML('afterbegin', errorMarkup);
-  }
+  } // main function that generates the UI
+
 
   renderResults(recipes) {
     _classPrivateMethodGet(this, _clear, _clear2).call(this);
@@ -6733,7 +6743,8 @@ class ResultsView {
     });
   }
 
-}
+} // exporting an object of the class
+
 
 var _clear2 = function _clear2() {
   _classPrivateFieldGet(this, _searchField).value = '';
@@ -6778,8 +6789,10 @@ class PaginationView {
   addButtonHandlers(handler, refresh) {
     _classPrivateFieldGet(this, _parentElement).addEventListener('click', e => {
       const button = e.target.closest('.btn--inline');
-      if (!button) return;
-      handler(button.dataset.goto);
+      if (!button) return; // calls the function that changes the page number
+
+      handler(button.dataset.goto); // refresh the UI
+
       refresh();
     });
   }
@@ -6812,17 +6825,21 @@ class PaginationView {
     console.log(lastPage);
 
     if (page === 1) {
+      // first page
       finalMarkup = markupRight;
     } else if (page === lastPage && lastPage > 1) {
+      // last page
       finalMarkup = markupLeft;
     } else {
+      // other pages
       finalMarkup = markupLeft + markupRight;
     }
 
     _classPrivateFieldGet(this, _parentElement).insertAdjacentHTML('afterbegin', finalMarkup);
   }
 
-}
+} // export an object of this class
+
 
 var _clear2 = function _clear2() {
   _classPrivateFieldGet(this, _parentElement).innerHTML = '';
