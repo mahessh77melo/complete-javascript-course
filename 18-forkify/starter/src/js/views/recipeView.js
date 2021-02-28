@@ -1,5 +1,6 @@
 import icons from 'url:../../img/icons.svg';
 import { Fraction } from 'fractional';
+import { SERVINGS_DIFF } from '../config';
 
 class RecipeView {
   // private variables
@@ -25,6 +26,18 @@ class RecipeView {
   // listening for DOM events
   addHandlerRender(handler) {
     ['hashchange', 'load'].forEach(e => window.addEventListener(e, handler));
+  }
+
+  addHandlerServings(handler) {
+    this.#parentElement.addEventListener('click', e => {
+      const button = e.target.closest('.btn--tiny');
+      if (!button) return;
+      if (button.classList.contains('btn--decrease-servings')) {
+        handler(-SERVINGS_DIFF);
+      } else if (button.classList.contains('btn--increase-servings')) {
+        handler(SERVINGS_DIFF);
+      }
+    });
   }
 
   // loading spinner
@@ -88,7 +101,7 @@ class RecipeView {
             <span class="recipe__info-text">servings</span>
 
             <div class="recipe__info-buttons">
-              <button class="btn--tiny btn--increase-servings">
+              <button class="btn--tiny btn--decrease-servings">
                 <svg>
                   <use href="${icons}#icon-minus-circle"></use>
                 </svg>

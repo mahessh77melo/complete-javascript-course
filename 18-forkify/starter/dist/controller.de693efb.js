@@ -530,11 +530,21 @@ const controlPagination = function () {
   _resultsView.default.renderResults((0, _model.loadSearchResultPage)(_model.state.search.page));
 
   _paginationView.default.renderButtons(_model.state.search.page, _model.state.search.results.length);
+}; // function to update the recipe based on the servings
+
+
+const controlServings = function (diff) {
+  // update the recipe servings (in state)
+  (0, _model.updateServings)(_model.state.recipe.servings + diff); // render the updated recipe in the UI
+
+  _recipeView.default.render(_model.state.recipe);
 }; // initially called function
 
 
 const init = function () {
   _recipeView.default.addHandlerRender(controlRecipes);
+
+  _recipeView.default.addHandlerServings(controlServings);
 
   searchBtn.addEventListener('click', controlSearchResults);
   searchForm.addEventListener('submit', controlSearchResults);
@@ -5190,7 +5200,7 @@ $({ target: 'URL', proto: true, enumerable: true }, {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.alterPage = exports.loadSearchResultPage = exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
+exports.updateServings = exports.alterPage = exports.loadSearchResultPage = exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
 
 var _config = require("./config");
 
@@ -5268,13 +5278,25 @@ const alterPage = function (num) {
 };
 
 exports.alterPage = alterPage;
+
+const updateServings = function (newServings) {
+  if (newServings < 1) return; // update the quantity for each ingredient in the recipe
+
+  console.log(`update function called with argument ${newServings}`);
+  state.recipe.ingredients.forEach(ing => {
+    ing.quantity = ing.quantity * newServings / state.recipe.servings;
+  });
+  state.recipe.servings = newServings;
+};
+
+exports.updateServings = updateServings;
 },{"./config":"09212d541c5c40ff2bd93475a904f8de","./helpers":"0e8dcd8a4e1c61cf18f78e1c2563655d"}],"09212d541c5c40ff2bd93475a904f8de":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.RESULTS_PER_PAGE = exports.TIMEOUT_SEC = exports.API_LINK = exports.API_KEY = exports.RECIPE_URL = void 0;
+exports.SERVINGS_DIFF = exports.RESULTS_PER_PAGE = exports.TIMEOUT_SEC = exports.API_LINK = exports.API_KEY = exports.RECIPE_URL = void 0;
 const RECIPE_URL = 'https://forkify-api.herokuapp.com/api/v2/recipes';
 exports.RECIPE_URL = RECIPE_URL;
 const API_KEY = '1b72ce05-f020-4c6a-a734-4303be611a13';
@@ -5285,6 +5307,8 @@ const TIMEOUT_SEC = 6;
 exports.TIMEOUT_SEC = TIMEOUT_SEC;
 const RESULTS_PER_PAGE = 10;
 exports.RESULTS_PER_PAGE = RESULTS_PER_PAGE;
+const SERVINGS_DIFF = 1;
+exports.SERVINGS_DIFF = SERVINGS_DIFF;
 },{}],"0e8dcd8a4e1c61cf18f78e1c2563655d":[function(require,module,exports) {
 "use strict";
 
@@ -6081,6 +6105,8 @@ var _icons = _interopRequireDefault(require("url:../../img/icons.svg"));
 
 var _fractional = require("fractional");
 
+var _config = require("../config");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classPrivateFieldGet(receiver, privateMap) { var descriptor = privateMap.get(receiver); if (!descriptor) { throw new TypeError("attempted to get private field on non-instance"); } if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
@@ -6142,6 +6168,19 @@ class RecipeView {
   // listening for DOM events
   addHandlerRender(handler) {
     ['hashchange', 'load'].forEach(e => window.addEventListener(e, handler));
+  }
+
+  addHandlerServings(handler) {
+    _classPrivateFieldGet(this, _parentElement).addEventListener('click', e => {
+      const button = e.target.closest('.btn--tiny');
+      if (!button) return;
+
+      if (button.classList.contains('btn--decrease-servings')) {
+        handler(-_config.SERVINGS_DIFF);
+      } else if (button.classList.contains('btn--increase-servings')) {
+        handler(_config.SERVINGS_DIFF);
+      }
+    });
   } // loading spinner
 
 
@@ -6211,7 +6250,7 @@ var _generateMarkup2 = function _generateMarkup2() {
             <span class="recipe__info-text">servings</span>
 
             <div class="recipe__info-buttons">
-              <button class="btn--tiny btn--increase-servings">
+              <button class="btn--tiny btn--decrease-servings">
                 <svg>
                   <use href="${_icons.default}#icon-minus-circle"></use>
                 </svg>
@@ -6280,7 +6319,7 @@ var _generateIngredientMarkup2 = function _generateIngredientMarkup2(ing) {
 var _default = new RecipeView();
 
 exports.default = _default;
-},{"url:../../img/icons.svg":"496abfd48186586af05dd10da4c95455","fractional":"ddbc156a7c16e105c8df04e9fdec967d"}],"ddbc156a7c16e105c8df04e9fdec967d":[function(require,module,exports) {
+},{"url:../../img/icons.svg":"496abfd48186586af05dd10da4c95455","fractional":"ddbc156a7c16e105c8df04e9fdec967d","../config":"09212d541c5c40ff2bd93475a904f8de"}],"ddbc156a7c16e105c8df04e9fdec967d":[function(require,module,exports) {
 /*
 fraction.js
 A Javascript fraction library.

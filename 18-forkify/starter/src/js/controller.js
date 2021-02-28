@@ -4,6 +4,7 @@ import {
   loadSearchResults,
   loadSearchResultPage,
   alterPage,
+  updateServings,
 } from './model';
 import recipeView from './views/recipeView';
 import icons from 'url:../img/icons.svg'; // parcel 2 import
@@ -66,9 +67,18 @@ const controlPagination = function () {
   paginationView.renderButtons(state.search.page, state.search.results.length);
 };
 
+// function to update the recipe based on the servings
+const controlServings = function (diff) {
+  // update the recipe servings (in state)
+  updateServings(state.recipe.servings + diff);
+  // render the updated recipe in the UI
+  recipeView.render(state.recipe);
+};
+
 // initially called function
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);
+  recipeView.addHandlerServings(controlServings);
   searchBtn.addEventListener('click', controlSearchResults);
   searchForm.addEventListener('submit', controlSearchResults);
 };
