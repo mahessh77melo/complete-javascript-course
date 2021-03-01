@@ -30,6 +30,9 @@ const controlRecipes = async function () {
 
     // RENDERING THE RECIPE TO THE UI
     recipeView.render(state.recipe);
+
+    // updating the active recipe in the search results
+    resultsView.updateActiveRecipe(state.recipe.id);
   } catch (error) {
     recipeView.renderError();
   }
@@ -44,10 +47,14 @@ const controlSearchResults = async function (e) {
     if (!query) return;
     // loading the results
     await loadSearchResults(query);
+
     // render to the UI
     state.search.results.length > 0
       ? resultsView.renderResults(loadSearchResultPage(state.search.page))
       : resultsView.renderError();
+    // highlighting the active recipe in the search results
+    resultsView.updateActiveRecipe(state.recipe.id);
+
     // render the pagination buttons
     paginationView.renderButtons(
       state.search.page,
@@ -63,16 +70,22 @@ const controlSearchResults = async function (e) {
 
 // function to refresh the pagination and search results accordingly
 const controlPagination = function () {
+  // render the search results for the current page
   resultsView.renderResults(loadSearchResultPage(state.search.page));
+
+  // render the buttons as per the current page
   paginationView.renderButtons(state.search.page, state.search.results.length);
+
+  // highlighting the active recipe in the search results
+  resultsView.updateActiveRecipe(state.recipe.id);
 };
 
 // function to update the recipe based on the servings
 const controlServings = function (diff) {
   // update the recipe servings (in state)
   updateServings(state.recipe.servings + diff);
-  // render the updated recipe in the UI
-  recipeView.render(state.recipe);
+  // update the DOM (instead of re-rendering)
+  recipeView.update(state.recipe);
 };
 
 // initially called function

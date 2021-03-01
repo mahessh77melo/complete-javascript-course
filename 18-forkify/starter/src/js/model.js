@@ -67,7 +67,6 @@ export const alterPage = function (num) {
 export const updateServings = function (newServings) {
   if (newServings < 1) return;
   // update the quantity for each ingredient in the recipe
-  console.log(`update function called with argument ${newServings}`);
   state.recipe.ingredients.forEach(ing => {
     ing.quantity = (ing.quantity * newServings) / state.recipe.servings;
   });

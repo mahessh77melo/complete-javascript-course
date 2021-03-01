@@ -494,7 +494,10 @@ const controlRecipes = async function () {
 
     await (0, _model.loadRecipe)(id); // RENDERING THE RECIPE TO THE UI
 
-    _recipeView.default.render(_model.state.recipe);
+    _recipeView.default.render(_model.state.recipe); // updating the active recipe in the search results
+
+
+    _resultsView.default.updateActiveRecipe(_model.state.recipe.id);
   } catch (error) {
     _recipeView.default.renderError();
   }
@@ -512,7 +515,10 @@ const controlSearchResults = async function (e) {
 
     await (0, _model.loadSearchResults)(query); // render to the UI
 
-    _model.state.search.results.length > 0 ? _resultsView.default.renderResults((0, _model.loadSearchResultPage)(_model.state.search.page)) : _resultsView.default.renderError(); // render the pagination buttons
+    _model.state.search.results.length > 0 ? _resultsView.default.renderResults((0, _model.loadSearchResultPage)(_model.state.search.page)) : _resultsView.default.renderError(); // highlighting the active recipe in the search results
+
+    _resultsView.default.updateActiveRecipe(_model.state.recipe.id); // render the pagination buttons
+
 
     _paginationView.default.renderButtons(_model.state.search.page, _model.state.search.results.length); // add the handlers once the UI is generated
 
@@ -527,17 +533,22 @@ const controlSearchResults = async function (e) {
 
 
 const controlPagination = function () {
-  _resultsView.default.renderResults((0, _model.loadSearchResultPage)(_model.state.search.page));
+  // render the search results for the current page
+  _resultsView.default.renderResults((0, _model.loadSearchResultPage)(_model.state.search.page)); // render the buttons as per the current page
 
-  _paginationView.default.renderButtons(_model.state.search.page, _model.state.search.results.length);
+
+  _paginationView.default.renderButtons(_model.state.search.page, _model.state.search.results.length); // highlighting the active recipe in the search results
+
+
+  _resultsView.default.updateActiveRecipe(_model.state.recipe.id);
 }; // function to update the recipe based on the servings
 
 
 const controlServings = function (diff) {
   // update the recipe servings (in state)
-  (0, _model.updateServings)(_model.state.recipe.servings + diff); // render the updated recipe in the UI
+  (0, _model.updateServings)(_model.state.recipe.servings + diff); // update the DOM (instead of re-rendering)
 
-  _recipeView.default.render(_model.state.recipe);
+  _recipeView.default.update(_model.state.recipe);
 }; // initially called function
 
 
@@ -5282,7 +5293,6 @@ exports.alterPage = alterPage;
 const updateServings = function (newServings) {
   if (newServings < 1) return; // update the quantity for each ingredient in the recipe
 
-  console.log(`update function called with argument ${newServings}`);
   state.recipe.ingredients.forEach(ing => {
     ing.quantity = ing.quantity * newServings / state.recipe.servings;
   });
@@ -6162,6 +6172,31 @@ class RecipeView {
 
 
     _classPrivateFieldGet(this, _parentElement).insertAdjacentHTML('beforeend', markup);
+  } // DOM updating algorithm
+
+
+  update(data) {
+    _classPrivateFieldSet(this, _data, data); // returns the text for the new markup
+
+
+    const newMarkup = _classPrivateMethodGet(this, _generateMarkup, _generateMarkup2).call(this); // this creates DOM elements based on the markup we feed
+
+
+    const newDOM = document.createRange().createContextualFragment(newMarkup); // newly generated elements
+
+    const newElements = [...newDOM.querySelectorAll('*')]; // elements currently present in the DOM
+
+    const curElements = [..._classPrivateFieldGet(this, _parentElement).querySelectorAll('*')]; // checking equality
+
+    newElements.forEach((newEl, i) => {
+      const curEl = curElements[i];
+      console.log(curEl, newEl.isEqualNode(curEl)); // if the new element differs, update it accordingly
+      // also check if the element contains text directly
+
+      if (!curEl.isEqualNode(newEl) && curEl.firstChild.nodeValue.trim() !== '') {
+        curEl.textContent = newEl.textContent;
+      }
+    });
   } // clearing the parent element (recipe container)
 
 
@@ -6752,6 +6787,21 @@ class ResultsView {
     `;
 
     _classPrivateFieldGet(this, _resultsContainer).insertAdjacentHTML('afterbegin', errorMarkup);
+  }
+
+  updateActiveRecipe(id) {
+    console.log('functino called'); // preview__link--active
+
+    const currentLinks = [..._classPrivateFieldGet(this, _resultsContainer).querySelectorAll('.preview__link')]; // finding the active link based on the id
+
+    const activeLink = currentLinks?.find(link => link.getAttribute('href') === `#${id}`); // removing the active class for all the current links
+
+    currentLinks.forEach(link => {
+      link.classList.remove('preview__link--active');
+    }); // adding the active class name
+
+    activeLink?.classList.add('preview__link--active');
+    console.log(activeLink);
   } // main function that generates the UI
 
 

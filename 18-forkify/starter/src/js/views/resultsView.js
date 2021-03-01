@@ -28,6 +28,25 @@ class ResultsView {
     this.#resultsContainer.insertAdjacentHTML('afterbegin', errorMarkup);
   }
 
+  updateActiveRecipe(id) {
+    console.log('functino called');
+    // preview__link--active
+    const currentLinks = [
+      ...this.#resultsContainer.querySelectorAll('.preview__link'),
+    ];
+    // finding the active link based on the id
+    const activeLink = currentLinks?.find(
+      link => link.getAttribute('href') === `#${id}`
+    );
+    // removing the active class for all the current links
+    currentLinks.forEach(link => {
+      link.classList.remove('preview__link--active');
+    });
+    // adding the active class name
+    activeLink?.classList.add('preview__link--active');
+    console.log(activeLink);
+  }
+
   // main function that generates the UI
   renderResults(recipes) {
     this.#clear();

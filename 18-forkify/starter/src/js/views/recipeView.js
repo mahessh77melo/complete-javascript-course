@@ -18,6 +18,32 @@ class RecipeView {
     this.#parentElement.insertAdjacentHTML('beforeend', markup);
   }
 
+  // DOM updating algorithm
+  update(data) {
+    this.#data = data;
+    // returns the text for the new markup
+    const newMarkup = this.#generateMarkup();
+    // this creates DOM elements based on the markup we feed
+    const newDOM = document.createRange().createContextualFragment(newMarkup);
+    // newly generated elements
+    const newElements = [...newDOM.querySelectorAll('*')];
+    // elements currently present in the DOM
+    const curElements = [...this.#parentElement.querySelectorAll('*')];
+
+    // checking equality
+    newElements.forEach((newEl, i) => {
+      const curEl = curElements[i];
+      console.log(curEl, newEl.isEqualNode(curEl));
+      // if the new element differs, update it accordingly
+      // also check if the element contains text directly
+      if (
+        !curEl.isEqualNode(newEl) &&
+        curEl.firstChild.nodeValue.trim() !== ''
+      ) {
+        curEl.textContent = newEl.textContent;
+      }
+    });
+  }
   // clearing the parent element (recipe container)
   #clear() {
     this.#parentElement.innerHTML = '';
