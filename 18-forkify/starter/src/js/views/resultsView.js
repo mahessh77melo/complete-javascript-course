@@ -47,7 +47,7 @@ class ResultsView {
     activeLink?.classList.add('preview__link--active');
   }
 
-  // Event listener for clicking the form
+  // Event listener for clicking the submit button
   addHandlerSubmit(handler) {
     this.#searchBtn.addEventListener('click', handler);
   }
