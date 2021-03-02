@@ -8,6 +8,7 @@ import {
   addBookmark,
   removeBookmark,
   loadBookmarks,
+  uploadNewRecipe,
 } from './model';
 import icons from 'url:../img/icons.svg'; // parcel 2 import
 import 'core-js/stable';
@@ -16,6 +17,7 @@ import recipeView from './views/recipeView';
 import resultsView from './views/resultsView';
 import paginationView from './views/paginationView';
 import bookmarksView from './views/bookmarksView';
+import addRecipeView from './views/addRecipeView';
 
 // code begins
 const recipeContainer = document.querySelector('.recipe');
@@ -105,6 +107,20 @@ const controlBookmarks = function (remove = false) {
   bookmarksView.render(state.bookmarks);
 };
 
+// function to control adding of new recipes thru the api
+const controlAddRecipe = async function (newRecipe) {
+  try {
+    // upload the new recipe via an API request
+    await uploadNewRecipe(newRecipe);
+    // RENDERING THE RECIPE TO THE UI
+    recipeView.render(state.recipe);
+    // close the window
+    addRecipeView.toggleHidden();
+  } catch (error) {
+    alert(error);
+  }
+};
+
 // function to load and render the localStorage bookmark
 const loadLocalStorageBookmarks = function () {
   loadBookmarks();
@@ -120,5 +136,6 @@ const init = function () {
   resultsView.addHandlerSubmit(controlSearchResults);
   resultsView.addHandlerClick(controlSearchResults);
   window.addEventListener('load', loadLocalStorageBookmarks);
+  addRecipeView.addHandlerUpload(controlAddRecipe);
 };
 init();

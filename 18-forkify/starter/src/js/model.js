@@ -1,5 +1,5 @@
-import { RECIPE_URL, RESULTS_PER_PAGE } from './config';
-import { getJSON } from './helpers';
+import { API_KEY, API_LINK, RECIPE_URL, RESULTS_PER_PAGE } from './config';
+import { getJSON, sendJSON } from './helpers';
 
 export const state = {
   recipe: {},
@@ -10,22 +10,28 @@ export const state = {
   },
   bookmarks: [],
 };
+
+const createRecipe = function (obj) {
+  return {
+    id: obj.id,
+    title: obj.title,
+    image: obj.image_url,
+    publisher: obj.publisher,
+    cookingTime: obj.cooking_time,
+    url: obj.source_url,
+    ingredients: obj.ingredients,
+    servings: obj.servings,
+    bookmarked: isBookmarked(obj),
+    // the following line will add the key property if and only there is one
+    ...(obj.key && { key: obj.key }),
+  };
+};
 export const loadRecipe = async function (id) {
   try {
     const data = await getJSON(`${RECIPE_URL}/${id}`);
     const obj = data.data.recipe;
     //  altering the property names
-    state.recipe = {
-      id: obj.id,
-      title: obj.title,
-      image: obj.image_url,
-      publisher: obj.publisher,
-      cookingTime: obj.cooking_time,
-      url: obj.source_url,
-      ingredients: obj.ingredients,
-      servings: obj.servings,
-      bookmarked: isBookmarked(obj),
-    };
+    state.recipe = createRecipe(obj);
     console.log(state.recipe);
   } catch (error) {
     console.log(error);
@@ -108,4 +114,32 @@ export const loadBookmarks = function () {
   if (!existingBookmarks) return;
   existingBookmarks = JSON.parse(existingBookmarks);
   state.bookmarks = existingBookmarks;
+};
+
+export const uploadNewRecipe = async function (newRecipe) {
+  const ingredients = Object.entries(newRecipe).filter(
+    entry => entry[0].startsWith('ingredient') && entry[1] !== ''
+  );
+  const ingredientObjects = ingredients.map(ing => {
+    const str = ing[1];
+    const ingArray = str.split(',');
+    if (ingArray.length !== 3)
+      throw new Error(
+        'Wrong entry format, please follow the correct format for best results!'
+      );
+    const [quantity, unit, description] = ingArray;
+    return { quantity: quantity ? +quantity : null, unit, description };
+  });
+  const recipeObj = {
+    title: newRecipe.title,
+    image_url: newRecipe.image,
+    source_url: newRecipe.sourceUrl,
+    publisher: newRecipe.publisher,
+    servings: +newRecipe.servings,
+    cooking_time: +newRecipe.cookingTime,
+    ingredients: ingredientObjects,
+  };
+  const returnData = await sendJSON(`${RECIPE_URL}?key=${API_KEY}`, recipeObj);
+  state.recipe = createRecipe(returnData.data.recipe);
+  console.log(returnData);
 };

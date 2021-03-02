@@ -479,6 +479,8 @@ var _paginationView = _interopRequireDefault(require("./views/paginationView"));
 
 var _bookmarksView = _interopRequireDefault(require("./views/bookmarksView"));
 
+var _addRecipeView = _interopRequireDefault(require("./views/addRecipeView"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // code begins
@@ -566,6 +568,21 @@ const controlBookmarks = function (remove = false) {
   console.log(_model.state.recipe);
 
   _bookmarksView.default.render(_model.state.bookmarks);
+}; // function to control adding of new recipes thru the api
+
+
+const controlAddRecipe = async function (newRecipe) {
+  try {
+    // upload the new recipe via an API request
+    await (0, _model.uploadNewRecipe)(newRecipe); // RENDERING THE RECIPE TO THE UI
+
+    _recipeView.default.render(_model.state.recipe); // close the window
+
+
+    _addRecipeView.default.toggleHidden();
+  } catch (error) {
+    alert(error);
+  }
 }; // function to load and render the localStorage bookmark
 
 
@@ -590,10 +607,12 @@ const init = function () {
   _resultsView.default.addHandlerClick(controlSearchResults);
 
   window.addEventListener('load', loadLocalStorageBookmarks);
+
+  _addRecipeView.default.addHandlerUpload(controlAddRecipe);
 };
 
 init();
-},{"url:../img/icons.svg":"496abfd48186586af05dd10da4c95455","core-js/modules/es.typed-array.float32-array.js":"d5ed5e3a2e200dcf66c948e6350ae29c","core-js/modules/es.typed-array.float64-array.js":"49914eeba57759547672886c5961b9e4","core-js/modules/es.typed-array.int8-array.js":"1fc9d0d9e9c4ca72873ee75cc9532911","core-js/modules/es.typed-array.int16-array.js":"6ba53210946e69387b5af65ca70f5602","core-js/modules/es.typed-array.int32-array.js":"52f07ad61480c3da8b1b371346f2b755","core-js/modules/es.typed-array.uint8-array.js":"6042ea91f038c74624be740ff17090b9","core-js/modules/es.typed-array.uint8-clamped-array.js":"47e53ff27a819e98075783d2516842bf","core-js/modules/es.typed-array.uint16-array.js":"20f511ab1a5fbdd3a99ff1f471adbc30","core-js/modules/es.typed-array.uint32-array.js":"8212db3659c5fe8bebc2163b12c9f547","core-js/modules/es.typed-array.from.js":"183d72778e0f99cedb12a04e35ea2d50","core-js/modules/es.typed-array.of.js":"2ee3ec99d0b3dea4fec9002159200789","core-js/modules/web.immediate.js":"140df4f8e97a45c53c66fead1f5a9e92","core-js/modules/web.url.js":"a66c25e402880ea6b966ee8ece30b6df","core-js/modules/web.url.to-json.js":"6357c5a053a36e38c0e24243e550dd86","core-js/modules/web.url-search-params.js":"2494aebefd4ca447de0ef4cfdd47509e","./model":"aabf248f40f7693ef84a0cb99f385d1f","./views/recipeView":"bcae1aced0301b01ccacb3e6f7dfede8","./views/resultsView":"eacdbc0d50ee3d2819f3ee59366c2773","./views/paginationView":"d2063f3e7de2e4cdacfcb5eb6479db05","./views/bookmarksView":"7ed9311e216aa789713f70ebeec3ed40"}],"496abfd48186586af05dd10da4c95455":[function(require,module,exports) {
+},{"url:../img/icons.svg":"496abfd48186586af05dd10da4c95455","core-js/modules/es.typed-array.float32-array.js":"d5ed5e3a2e200dcf66c948e6350ae29c","core-js/modules/es.typed-array.float64-array.js":"49914eeba57759547672886c5961b9e4","core-js/modules/es.typed-array.int8-array.js":"1fc9d0d9e9c4ca72873ee75cc9532911","core-js/modules/es.typed-array.int16-array.js":"6ba53210946e69387b5af65ca70f5602","core-js/modules/es.typed-array.int32-array.js":"52f07ad61480c3da8b1b371346f2b755","core-js/modules/es.typed-array.uint8-array.js":"6042ea91f038c74624be740ff17090b9","core-js/modules/es.typed-array.uint8-clamped-array.js":"47e53ff27a819e98075783d2516842bf","core-js/modules/es.typed-array.uint16-array.js":"20f511ab1a5fbdd3a99ff1f471adbc30","core-js/modules/es.typed-array.uint32-array.js":"8212db3659c5fe8bebc2163b12c9f547","core-js/modules/es.typed-array.from.js":"183d72778e0f99cedb12a04e35ea2d50","core-js/modules/es.typed-array.of.js":"2ee3ec99d0b3dea4fec9002159200789","core-js/modules/web.immediate.js":"140df4f8e97a45c53c66fead1f5a9e92","core-js/modules/web.url.js":"a66c25e402880ea6b966ee8ece30b6df","core-js/modules/web.url.to-json.js":"6357c5a053a36e38c0e24243e550dd86","core-js/modules/web.url-search-params.js":"2494aebefd4ca447de0ef4cfdd47509e","./model":"aabf248f40f7693ef84a0cb99f385d1f","./views/recipeView":"bcae1aced0301b01ccacb3e6f7dfede8","./views/resultsView":"eacdbc0d50ee3d2819f3ee59366c2773","./views/paginationView":"d2063f3e7de2e4cdacfcb5eb6479db05","./views/bookmarksView":"7ed9311e216aa789713f70ebeec3ed40","./views/addRecipeView":"4dd83c2a08c1751220d223c54dc70016"}],"496abfd48186586af05dd10da4c95455":[function(require,module,exports) {
 module.exports = require('./bundle-url').getBundleURL() + require('./relative-path')("0f8f2f421e09ad4e", "48e529aa8d27e525");
 },{"./bundle-url":"2146da1905b95151ed14d455c784e7b7","./relative-path":"1b9943ef25c7bbdf0dd1b9fa91880a6c"}],"2146da1905b95151ed14d455c784e7b7":[function(require,module,exports) {
 "use strict";
@@ -5242,7 +5261,7 @@ $({ target: 'URL', proto: true, enumerable: true }, {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.loadBookmarks = exports.removeBookmark = exports.addBookmark = exports.updateServings = exports.alterPage = exports.loadSearchResultPage = exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
+exports.uploadNewRecipe = exports.loadBookmarks = exports.removeBookmark = exports.addBookmark = exports.updateServings = exports.alterPage = exports.loadSearchResultPage = exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
 
 var _config = require("./config");
 
@@ -5259,22 +5278,30 @@ const state = {
 };
 exports.state = state;
 
+const createRecipe = function (obj) {
+  return {
+    id: obj.id,
+    title: obj.title,
+    image: obj.image_url,
+    publisher: obj.publisher,
+    cookingTime: obj.cooking_time,
+    url: obj.source_url,
+    ingredients: obj.ingredients,
+    servings: obj.servings,
+    bookmarked: isBookmarked(obj),
+    // the following line will add the key property if and only there is one
+    ...(obj.key && {
+      key: obj.key
+    })
+  };
+};
+
 const loadRecipe = async function (id) {
   try {
     const data = await (0, _helpers.getJSON)(`${_config.RECIPE_URL}/${id}`);
     const obj = data.data.recipe; //  altering the property names
 
-    state.recipe = {
-      id: obj.id,
-      title: obj.title,
-      image: obj.image_url,
-      publisher: obj.publisher,
-      cookingTime: obj.cooking_time,
-      url: obj.source_url,
-      ingredients: obj.ingredients,
-      servings: obj.servings,
-      bookmarked: isBookmarked(obj)
-    };
+    state.recipe = createRecipe(obj);
     console.log(state.recipe);
   } catch (error) {
     console.log(error);
@@ -5377,6 +5404,35 @@ const loadBookmarks = function () {
 };
 
 exports.loadBookmarks = loadBookmarks;
+
+const uploadNewRecipe = async function (newRecipe) {
+  const ingredients = Object.entries(newRecipe).filter(entry => entry[0].startsWith('ingredient') && entry[1] !== '');
+  const ingredientObjects = ingredients.map(ing => {
+    const str = ing[1];
+    const ingArray = str.split(',');
+    if (ingArray.length !== 3) throw new Error('Wrong entry format, please follow the correct format for best results!');
+    const [quantity, unit, description] = ingArray;
+    return {
+      quantity: quantity ? +quantity : null,
+      unit,
+      description
+    };
+  });
+  const recipeObj = {
+    title: newRecipe.title,
+    image_url: newRecipe.image,
+    source_url: newRecipe.sourceUrl,
+    publisher: newRecipe.publisher,
+    servings: +newRecipe.servings,
+    cooking_time: +newRecipe.cookingTime,
+    ingredients: ingredientObjects
+  };
+  const returnData = await (0, _helpers.sendJSON)(`${_config.RECIPE_URL}?key=${_config.API_KEY}`, recipeObj);
+  state.recipe = createRecipe(returnData.data.recipe);
+  console.log(returnData);
+};
+
+exports.uploadNewRecipe = uploadNewRecipe;
 },{"./config":"09212d541c5c40ff2bd93475a904f8de","./helpers":"0e8dcd8a4e1c61cf18f78e1c2563655d"}],"09212d541c5c40ff2bd93475a904f8de":[function(require,module,exports) {
 "use strict";
 
@@ -5386,7 +5442,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.SERVINGS_DIFF = exports.RESULTS_PER_PAGE = exports.TIMEOUT_SEC = exports.API_LINK = exports.API_KEY = exports.RECIPE_URL = void 0;
 const RECIPE_URL = 'https://forkify-api.herokuapp.com/api/v2/recipes';
 exports.RECIPE_URL = RECIPE_URL;
-const API_KEY = '1b72ce05-f020-4c6a-a734-4303be611a13';
+const API_KEY = '16ea1acc-f410-4b5f-b765-0084bc359666';
 exports.API_KEY = API_KEY;
 const API_LINK = 'https://forkify-api.herokuapp.com/v2';
 exports.API_LINK = API_LINK;
@@ -5402,7 +5458,7 @@ exports.SERVINGS_DIFF = SERVINGS_DIFF;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getJSON = void 0;
+exports.sendJSON = exports.getJSON = void 0;
 
 var _regeneratorRuntime = require("regenerator-runtime");
 
@@ -5430,6 +5486,27 @@ const getJSON = async function (url) {
 };
 
 exports.getJSON = getJSON;
+
+const sendJSON = async function (url, uploadData) {
+  try {
+    // promise.race between a 5 second timeout and the fetch function
+    const res = await Promise.race([fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(uploadData)
+    }), timeout(_config.TIMEOUT_SEC)]);
+    const data = await res.json(); // throw an error if the resulting object is not what we expected
+
+    if (!res.ok) throw new Error(`${data.message} (${res.status})`);
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.sendJSON = sendJSON;
 },{"regenerator-runtime":"e155e0d3930b156f86c48e8d05522b16","./config":"09212d541c5c40ff2bd93475a904f8de"}],"e155e0d3930b156f86c48e8d05522b16":[function(require,module,exports) {
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
@@ -7164,6 +7241,71 @@ var _generateMarkup2 = function _generateMarkup2(rec) {
 };
 
 var _default = new BookMarksView();
+
+exports.default = _default;
+},{"url:../../img/icons.svg":"496abfd48186586af05dd10da4c95455"}],"4dd83c2a08c1751220d223c54dc70016":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _icons = _interopRequireDefault(require("url:../../img/icons.svg"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+class AddRecipeView {
+  constructor() {
+    _defineProperty(this, "_parentElement", document.querySelector('.upload'));
+
+    _defineProperty(this, "_window", document.querySelector('.add-recipe-window'));
+
+    _defineProperty(this, "_overlay", document.querySelector('.overlay'));
+
+    _defineProperty(this, "_btnOpen", document.querySelector('.nav__btn--add-recipe'));
+
+    _defineProperty(this, "_btnClose", document.querySelector('.btn--close-modal'));
+
+    this._addHandlers();
+  } // ṣelf explanatory
+
+
+  toggleHidden() {
+    this._window.classList.toggle('hidden');
+
+    this._overlay.classList.toggle('hidden');
+  }
+
+  _addHandlers() {
+    this._btnOpen.addEventListener('click', this.toggleHidden.bind(this));
+
+    this._btnClose.addEventListener('click', this.toggleHidden.bind(this));
+
+    this._overlay.addEventListener('click', this.toggleHidden.bind(this));
+  } // exported function - called from controller
+
+
+  addHandlerUpload(handler) {
+    this._parentElement.addEventListener('submit', function (e) {
+      e.preventDefault(); // this is the correct way to destructure the result got from the api
+
+      const dataArray = [...new FormData(this)]; // the resulting data is an array of key value pairs
+      // this can be changed into key value pairs
+
+      const data = Object.fromEntries(dataArray);
+      handler(data);
+    });
+  }
+
+  _generateMarkup() {// function to generate the markup
+  }
+
+}
+
+var _default = new AddRecipeView();
 
 exports.default = _default;
 },{"url:../../img/icons.svg":"496abfd48186586af05dd10da4c95455"}]},{},["ef07c0b099827f19f5a5689b731b9164","d09782a30363f48df98288c499824160","175e469a7ea7db1c8c0744d04372621f"], null)
