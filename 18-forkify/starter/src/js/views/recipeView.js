@@ -33,14 +33,18 @@ class RecipeView {
     // checking equality
     newElements.forEach((newEl, i) => {
       const curEl = curElements[i];
-      console.log(curEl, newEl.isEqualNode(curEl));
       // if the new element differs, update it accordingly
-      // also check if the element contains text directly
       if (
+        // also check if the element contains text directly
         !curEl.isEqualNode(newEl) &&
-        curEl.firstChild.nodeValue.trim() !== ''
+        curEl.firstChild?.nodeValue.trim() !== ''
       ) {
         curEl.textContent = newEl.textContent;
+      }
+      if (!curEl.isEqualNode(newEl)) {
+        [...newEl.attributes].forEach(attr =>
+          curEl.setAttribute(attr.name, attr.value)
+        );
       }
     });
   }
@@ -54,6 +58,7 @@ class RecipeView {
     ['hashchange', 'load'].forEach(e => window.addEventListener(e, handler));
   }
 
+  // event listener to update the servings
   addHandlerServings(handler) {
     this.#parentElement.addEventListener('click', e => {
       const button = e.target.closest('.btn--tiny');
@@ -63,6 +68,15 @@ class RecipeView {
       } else if (button.classList.contains('btn--increase-servings')) {
         handler(SERVINGS_DIFF);
       }
+    });
+  }
+
+  // event listener to add the bookmark
+  addHandlerAddBookmark(handler) {
+    this.#parentElement.addEventListener('click', e => {
+      const bookmarkButton = e.target.closest('.btn--bookmark');
+      if (!bookmarkButton) return;
+      this.#data.bookmarked ? handler(true) : handler();
     });
   }
 
@@ -145,9 +159,11 @@ class RecipeView {
               <use href="${icons}#icon-user"></use>
             </svg>
           </div>
-          <button class="btn--round">
+          <button class="btn--round btn--bookmark">
             <svg class="">
-              <use href="${icons}#icon-bookmark-fill"></use>
+              <use href="${icons}#icon-bookmark${
+      this.#data.bookmarked ? '-fill' : ''
+    }"></use>
             </svg>
           </button>
         </div>

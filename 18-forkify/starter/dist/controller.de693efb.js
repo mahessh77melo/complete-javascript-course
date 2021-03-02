@@ -469,13 +469,15 @@ require("core-js/modules/web.url-search-params.js");
 
 var _model = require("./model");
 
-var _recipeView = _interopRequireDefault(require("./views/recipeView"));
-
 var _icons = _interopRequireDefault(require("url:../img/icons.svg"));
+
+var _recipeView = _interopRequireDefault(require("./views/recipeView"));
 
 var _resultsView = _interopRequireDefault(require("./views/resultsView"));
 
 var _paginationView = _interopRequireDefault(require("./views/paginationView"));
+
+var _bookmarksView = _interopRequireDefault(require("./views/bookmarksView"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -497,7 +499,10 @@ const controlRecipes = async function () {
     _recipeView.default.render(_model.state.recipe); // updating the active recipe in the search results
 
 
-    _resultsView.default.updateActiveRecipe(_model.state.recipe.id);
+    _resultsView.default.updateActiveRecipe(_model.state.recipe.id); // loading the bookmarks from the localStorage
+
+
+    _bookmarksView.default.render(_model.state.bookmarks);
   } catch (error) {
     _recipeView.default.renderError();
   }
@@ -549,6 +554,25 @@ const controlServings = function (diff) {
   (0, _model.updateServings)(_model.state.recipe.servings + diff); // update the DOM (instead of re-rendering)
 
   _recipeView.default.update(_model.state.recipe);
+}; // function to control the bookmarks UI
+
+
+const controlBookmarks = function (remove = false) {
+  // add bookmark function
+  remove ? (0, _model.removeBookmark)(_model.state.recipe) : (0, _model.addBookmark)(_model.state.recipe); // refresh the ui
+
+  _recipeView.default.update(_model.state.recipe);
+
+  console.log(_model.state.recipe);
+
+  _bookmarksView.default.render(_model.state.bookmarks);
+}; // function to load and render the localStorage bookmark
+
+
+const loadLocalStorageBookmarks = function () {
+  (0, _model.loadBookmarks)();
+
+  _bookmarksView.default.render(_model.state.bookmarks);
 }; // initially called function
 
 
@@ -557,12 +581,19 @@ const init = function () {
 
   _recipeView.default.addHandlerServings(controlServings);
 
-  searchBtn.addEventListener('click', controlSearchResults);
-  searchForm.addEventListener('submit', controlSearchResults);
+  _recipeView.default.addHandlerAddBookmark(controlBookmarks);
+
+  _bookmarksView.default.addBookmarkLoader(_model.loadBookmarks);
+
+  _resultsView.default.addHandlerSubmit(controlSearchResults);
+
+  _resultsView.default.addHandlerClick(controlSearchResults);
+
+  window.addEventListener('load', loadLocalStorageBookmarks);
 };
 
 init();
-},{"url:../img/icons.svg":"496abfd48186586af05dd10da4c95455","core-js/modules/es.typed-array.float32-array.js":"d5ed5e3a2e200dcf66c948e6350ae29c","core-js/modules/es.typed-array.float64-array.js":"49914eeba57759547672886c5961b9e4","core-js/modules/es.typed-array.int8-array.js":"1fc9d0d9e9c4ca72873ee75cc9532911","core-js/modules/es.typed-array.int16-array.js":"6ba53210946e69387b5af65ca70f5602","core-js/modules/es.typed-array.int32-array.js":"52f07ad61480c3da8b1b371346f2b755","core-js/modules/es.typed-array.uint8-array.js":"6042ea91f038c74624be740ff17090b9","core-js/modules/es.typed-array.uint8-clamped-array.js":"47e53ff27a819e98075783d2516842bf","core-js/modules/es.typed-array.uint16-array.js":"20f511ab1a5fbdd3a99ff1f471adbc30","core-js/modules/es.typed-array.uint32-array.js":"8212db3659c5fe8bebc2163b12c9f547","core-js/modules/es.typed-array.from.js":"183d72778e0f99cedb12a04e35ea2d50","core-js/modules/es.typed-array.of.js":"2ee3ec99d0b3dea4fec9002159200789","core-js/modules/web.immediate.js":"140df4f8e97a45c53c66fead1f5a9e92","core-js/modules/web.url.js":"a66c25e402880ea6b966ee8ece30b6df","core-js/modules/web.url.to-json.js":"6357c5a053a36e38c0e24243e550dd86","core-js/modules/web.url-search-params.js":"2494aebefd4ca447de0ef4cfdd47509e","./model":"aabf248f40f7693ef84a0cb99f385d1f","./views/recipeView":"bcae1aced0301b01ccacb3e6f7dfede8","./views/resultsView":"eacdbc0d50ee3d2819f3ee59366c2773","./views/paginationView":"d2063f3e7de2e4cdacfcb5eb6479db05"}],"496abfd48186586af05dd10da4c95455":[function(require,module,exports) {
+},{"url:../img/icons.svg":"496abfd48186586af05dd10da4c95455","core-js/modules/es.typed-array.float32-array.js":"d5ed5e3a2e200dcf66c948e6350ae29c","core-js/modules/es.typed-array.float64-array.js":"49914eeba57759547672886c5961b9e4","core-js/modules/es.typed-array.int8-array.js":"1fc9d0d9e9c4ca72873ee75cc9532911","core-js/modules/es.typed-array.int16-array.js":"6ba53210946e69387b5af65ca70f5602","core-js/modules/es.typed-array.int32-array.js":"52f07ad61480c3da8b1b371346f2b755","core-js/modules/es.typed-array.uint8-array.js":"6042ea91f038c74624be740ff17090b9","core-js/modules/es.typed-array.uint8-clamped-array.js":"47e53ff27a819e98075783d2516842bf","core-js/modules/es.typed-array.uint16-array.js":"20f511ab1a5fbdd3a99ff1f471adbc30","core-js/modules/es.typed-array.uint32-array.js":"8212db3659c5fe8bebc2163b12c9f547","core-js/modules/es.typed-array.from.js":"183d72778e0f99cedb12a04e35ea2d50","core-js/modules/es.typed-array.of.js":"2ee3ec99d0b3dea4fec9002159200789","core-js/modules/web.immediate.js":"140df4f8e97a45c53c66fead1f5a9e92","core-js/modules/web.url.js":"a66c25e402880ea6b966ee8ece30b6df","core-js/modules/web.url.to-json.js":"6357c5a053a36e38c0e24243e550dd86","core-js/modules/web.url-search-params.js":"2494aebefd4ca447de0ef4cfdd47509e","./model":"aabf248f40f7693ef84a0cb99f385d1f","./views/recipeView":"bcae1aced0301b01ccacb3e6f7dfede8","./views/resultsView":"eacdbc0d50ee3d2819f3ee59366c2773","./views/paginationView":"d2063f3e7de2e4cdacfcb5eb6479db05","./views/bookmarksView":"7ed9311e216aa789713f70ebeec3ed40"}],"496abfd48186586af05dd10da4c95455":[function(require,module,exports) {
 module.exports = require('./bundle-url').getBundleURL() + require('./relative-path')("0f8f2f421e09ad4e", "48e529aa8d27e525");
 },{"./bundle-url":"2146da1905b95151ed14d455c784e7b7","./relative-path":"1b9943ef25c7bbdf0dd1b9fa91880a6c"}],"2146da1905b95151ed14d455c784e7b7":[function(require,module,exports) {
 "use strict";
@@ -5211,7 +5242,7 @@ $({ target: 'URL', proto: true, enumerable: true }, {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateServings = exports.alterPage = exports.loadSearchResultPage = exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
+exports.loadBookmarks = exports.removeBookmark = exports.addBookmark = exports.updateServings = exports.alterPage = exports.loadSearchResultPage = exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
 
 var _config = require("./config");
 
@@ -5223,7 +5254,8 @@ const state = {
     query: '',
     results: [],
     page: 1
-  }
+  },
+  bookmarks: []
 };
 exports.state = state;
 
@@ -5240,7 +5272,8 @@ const loadRecipe = async function (id) {
       cookingTime: obj.cooking_time,
       url: obj.source_url,
       ingredients: obj.ingredients,
-      servings: obj.servings
+      servings: obj.servings,
+      bookmarked: isBookmarked(obj)
     };
     console.log(state.recipe);
   } catch (error) {
@@ -5250,6 +5283,11 @@ const loadRecipe = async function (id) {
 };
 
 exports.loadRecipe = loadRecipe;
+
+const isBookmarked = function (rec) {
+  const res = state.bookmarks.filter(item => item.id === rec.id);
+  return res.length > 0 ? true : false;
+};
 
 const loadSearchResults = async function (query) {
   try {
@@ -5300,6 +5338,45 @@ const updateServings = function (newServings) {
 };
 
 exports.updateServings = updateServings;
+
+const addBookmark = function (recipe) {
+  // Add the bookmarks to the state
+  state.bookmarks.push(recipe); // mark the current recipe as bookmarked
+
+  if (recipe.id === state.recipe.id) {
+    state.recipe.bookmarked = true;
+  }
+
+  saveBookmarks();
+};
+
+exports.addBookmark = addBookmark;
+
+const removeBookmark = function (recipe) {
+  // remove the bookmarks from the state
+  state.bookmarks = state.bookmarks.filter(rec => rec.id !== recipe.id); // set bookmarked to false
+
+  if (recipe.id === state.recipe.id) {
+    state.recipe.bookmarked = false;
+  }
+
+  saveBookmarks();
+};
+
+exports.removeBookmark = removeBookmark;
+
+const saveBookmarks = function () {
+  localStorage.setItem('forkifyBookmarks', JSON.stringify(state.bookmarks));
+};
+
+const loadBookmarks = function () {
+  let existingBookmarks = localStorage.forkifyBookmarks;
+  if (!existingBookmarks) return;
+  existingBookmarks = JSON.parse(existingBookmarks);
+  state.bookmarks = existingBookmarks;
+};
+
+exports.loadBookmarks = loadBookmarks;
 },{"./config":"09212d541c5c40ff2bd93475a904f8de","./helpers":"0e8dcd8a4e1c61cf18f78e1c2563655d"}],"09212d541c5c40ff2bd93475a904f8de":[function(require,module,exports) {
 "use strict";
 
@@ -6189,12 +6266,15 @@ class RecipeView {
     const curElements = [..._classPrivateFieldGet(this, _parentElement).querySelectorAll('*')]; // checking equality
 
     newElements.forEach((newEl, i) => {
-      const curEl = curElements[i];
-      console.log(curEl, newEl.isEqualNode(curEl)); // if the new element differs, update it accordingly
-      // also check if the element contains text directly
+      const curEl = curElements[i]; // if the new element differs, update it accordingly
 
-      if (!curEl.isEqualNode(newEl) && curEl.firstChild.nodeValue.trim() !== '') {
+      if ( // also check if the element contains text directly
+      !curEl.isEqualNode(newEl) && curEl.firstChild?.nodeValue.trim() !== '') {
         curEl.textContent = newEl.textContent;
+      }
+
+      if (!curEl.isEqualNode(newEl)) {
+        [...newEl.attributes].forEach(attr => curEl.setAttribute(attr.name, attr.value));
       }
     });
   } // clearing the parent element (recipe container)
@@ -6203,7 +6283,8 @@ class RecipeView {
   // listening for DOM events
   addHandlerRender(handler) {
     ['hashchange', 'load'].forEach(e => window.addEventListener(e, handler));
-  }
+  } // event listener to update the servings
+
 
   addHandlerServings(handler) {
     _classPrivateFieldGet(this, _parentElement).addEventListener('click', e => {
@@ -6215,6 +6296,15 @@ class RecipeView {
       } else if (button.classList.contains('btn--increase-servings')) {
         handler(_config.SERVINGS_DIFF);
       }
+    });
+  } // event listener to add the bookmark
+
+
+  addHandlerAddBookmark(handler) {
+    _classPrivateFieldGet(this, _parentElement).addEventListener('click', e => {
+      const bookmarkButton = e.target.closest('.btn--bookmark');
+      if (!bookmarkButton) return;
+      _classPrivateFieldGet(this, _data).bookmarked ? handler(true) : handler();
     });
   } // loading spinner
 
@@ -6303,9 +6393,9 @@ var _generateMarkup2 = function _generateMarkup2() {
               <use href="${_icons.default}#icon-user"></use>
             </svg>
           </div>
-          <button class="btn--round">
+          <button class="btn--round btn--bookmark">
             <svg class="">
-              <use href="${_icons.default}#icon-bookmark-fill"></use>
+              <use href="${_icons.default}#icon-bookmark${_classPrivateFieldGet(this, _data).bookmarked ? '-fill' : ''}"></use>
             </svg>
           </button>
         </div>
@@ -6743,6 +6833,10 @@ var _resultsContainer = new WeakMap();
 
 var _searchField = new WeakMap();
 
+var _searchBtn = new WeakMap();
+
+var _searchForm = new WeakMap();
+
 var _errorMessage = new WeakMap();
 
 var _clear = new WeakSet();
@@ -6759,6 +6853,16 @@ class ResultsView {
     _searchField.set(this, {
       writable: true,
       value: document.querySelector('.search__field')
+    });
+
+    _searchBtn.set(this, {
+      writable: true,
+      value: document.querySelector('.search__btn')
+    });
+
+    _searchForm.set(this, {
+      writable: true,
+      value: document.querySelector('.search')
     });
 
     _errorMessage.set(this, {
@@ -6790,8 +6894,7 @@ class ResultsView {
   }
 
   updateActiveRecipe(id) {
-    console.log('functino called'); // preview__link--active
-
+    // preview__link--active
     const currentLinks = [..._classPrivateFieldGet(this, _resultsContainer).querySelectorAll('.preview__link')]; // finding the active link based on the id
 
     const activeLink = currentLinks?.find(link => link.getAttribute('href') === `#${id}`); // removing the active class for all the current links
@@ -6801,7 +6904,16 @@ class ResultsView {
     }); // adding the active class name
 
     activeLink?.classList.add('preview__link--active');
-    console.log(activeLink);
+  } // Event listener for clicking the form
+
+
+  addHandlerSubmit(handler) {
+    _classPrivateFieldGet(this, _searchBtn).addEventListener('click', handler);
+  } // Event listener for submitting the form
+
+
+  addHandlerClick(handler) {
+    _classPrivateFieldGet(this, _searchForm).addEventListener('submit', handler);
   } // main function that generates the UI
 
 
@@ -6937,6 +7049,123 @@ var _clear2 = function _clear2() {
 var _default = new PaginationView();
 
 exports.default = _default;
-},{"url:../../img/icons.svg":"496abfd48186586af05dd10da4c95455","../config":"09212d541c5c40ff2bd93475a904f8de"}]},{},["ef07c0b099827f19f5a5689b731b9164","d09782a30363f48df98288c499824160","175e469a7ea7db1c8c0744d04372621f"], null)
+},{"url:../../img/icons.svg":"496abfd48186586af05dd10da4c95455","../config":"09212d541c5c40ff2bd93475a904f8de"}],"7ed9311e216aa789713f70ebeec3ed40":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _icons = _interopRequireDefault(require("url:../../img/icons.svg"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classPrivateFieldGet(receiver, privateMap) { var descriptor = privateMap.get(receiver); if (!descriptor) { throw new TypeError("attempted to get private field on non-instance"); } if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
+
+function _classPrivateMethodGet(receiver, privateSet, fn) { if (!privateSet.has(receiver)) { throw new TypeError("attempted to get private field on non-instance"); } return fn; }
+
+function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = privateMap.get(receiver); if (!descriptor) { throw new TypeError("attempted to set private field on non-instance"); } if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } return value; }
+
+var _parentElement = new WeakMap();
+
+var _data = new WeakMap();
+
+var _renderError = new WeakSet();
+
+var _clear = new WeakSet();
+
+var _generateMarkup = new WeakSet();
+
+class BookMarksView {
+  constructor() {
+    _generateMarkup.add(this);
+
+    _clear.add(this);
+
+    _renderError.add(this);
+
+    _parentElement.set(this, {
+      writable: true,
+      value: document.querySelector('.bookmarks__list')
+    });
+
+    _data.set(this, {
+      writable: true,
+      value: void 0
+    });
+  }
+
+  render(data) {
+    _classPrivateFieldSet(this, _data, data);
+
+    _classPrivateMethodGet(this, _clear, _clear2).call(this);
+
+    if (!data.length) {
+      _classPrivateMethodGet(this, _renderError, _renderError2).call(this);
+
+      return;
+    }
+
+    _classPrivateFieldGet(this, _data).forEach(bk => {
+      const markup = _classPrivateMethodGet(this, _generateMarkup, _generateMarkup2).call(this, bk);
+
+      _classPrivateFieldGet(this, _parentElement).insertAdjacentHTML('beforeend', markup);
+    });
+  }
+
+  // load bookmarks on page refresh and load
+  addBookmarkLoader(handler) {
+    window.addEventListener('load', handler);
+  }
+
+}
+
+var _renderError2 = function _renderError2() {
+  _classPrivateMethodGet(this, _clear, _clear2).call(this);
+
+  const errorMarkup = `
+				<div class="message">
+					<div>
+						<svg>
+							<use href="src/img/icons.svg#icon-smile"></use>
+						</svg>
+					</div>
+					<p>
+						No bookmarks yet. Find a nice recipe and bookmark it :)
+					</p>
+				</div>
+		`;
+
+  _classPrivateFieldGet(this, _parentElement).insertAdjacentHTML('afterbegin', errorMarkup);
+};
+
+var _clear2 = function _clear2() {
+  _classPrivateFieldGet(this, _parentElement).innerHTML = '';
+};
+
+var _generateMarkup2 = function _generateMarkup2(rec) {
+  const markup = `
+						<li class="preview">
+							<a class="preview__link" href="#${rec.id}">
+								<figure class="preview__fig">
+									<img src="${rec.image}" alt="${rec.title}" />
+								</figure>
+								<div class="preview__data">
+									<h4 class="preview__name">
+										${rec.title}
+									</h4>
+									<p class="preview__author">${rec.publisher}</p>
+								</div>
+							</a>
+						</li>
+		`;
+  return markup;
+};
+
+var _default = new BookMarksView();
+
+exports.default = _default;
+},{"url:../../img/icons.svg":"496abfd48186586af05dd10da4c95455"}]},{},["ef07c0b099827f19f5a5689b731b9164","d09782a30363f48df98288c499824160","175e469a7ea7db1c8c0744d04372621f"], null)
 
 //# sourceMappingURL=controller.de693efb.js.map

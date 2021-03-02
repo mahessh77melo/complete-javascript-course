@@ -2,6 +2,8 @@ import icons from 'url:../../img/icons.svg';
 class ResultsView {
   #resultsContainer = document.querySelector('.results');
   #searchField = document.querySelector('.search__field');
+  #searchBtn = document.querySelector('.search__btn');
+  #searchForm = document.querySelector('.search');
   #errorMessage = 'No search results for your query!';
 
   getQuery() {
@@ -29,7 +31,6 @@ class ResultsView {
   }
 
   updateActiveRecipe(id) {
-    console.log('functino called');
     // preview__link--active
     const currentLinks = [
       ...this.#resultsContainer.querySelectorAll('.preview__link'),
@@ -44,7 +45,16 @@ class ResultsView {
     });
     // adding the active class name
     activeLink?.classList.add('preview__link--active');
-    console.log(activeLink);
+  }
+
+  // Event listener for clicking the form
+  addHandlerSubmit(handler) {
+    this.#searchBtn.addEventListener('click', handler);
+  }
+
+  // Event listener for submitting the form
+  addHandlerClick(handler) {
+    this.#searchForm.addEventListener('submit', handler);
   }
 
   // main function that generates the UI

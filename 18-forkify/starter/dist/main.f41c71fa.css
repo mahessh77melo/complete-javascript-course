@@ -20,7 +20,7 @@ html {
 }
 
 body {
-  font-family: "Nunito Sans", sans-serif;
+  font-family: 'Nunito Sans', sans-serif;
   font-weight: 400;
   line-height: 1.6;
   color: #615551;
@@ -41,7 +41,7 @@ body {
   display: grid;
   grid-template-rows: 10rem minmax(100rem, auto);
   grid-template-columns: 1fr 2fr;
-  grid-template-areas: "head head" "list recipe";
+  grid-template-areas: 'head head' 'list recipe';
 }
 @media only screen and (max-width: 78.15em) {
   .container {
@@ -51,7 +51,10 @@ body {
   }
 }
 
-.btn--small, .btn--small:link, .btn--small:visited, .btn {
+.btn--small,
+.btn--small:link,
+.btn--small:visited,
+.btn {
   background-image: linear-gradient(to right bottom, #fbdb89, #f48982);
   border-radius: 10rem;
   border: none;
@@ -62,13 +65,16 @@ body {
   align-items: center;
   transition: all 0.2s;
 }
-.btn--small:hover, .btn:hover {
+.btn--small:hover,
+.btn:hover {
   transform: scale(1.05);
 }
-.btn--small:focus, .btn:focus {
+.btn--small:focus,
+.btn:focus {
   outline: none;
 }
-.btn--small > *:first-child, .btn > *:first-child {
+.btn--small > *:first-child,
+.btn > *:first-child {
   margin-right: 1rem;
 }
 
@@ -83,13 +89,17 @@ body {
   fill: currentColor;
 }
 
-.btn--small, .btn--small:link, .btn--small:visited {
+.btn--small,
+.btn--small:link,
+.btn--small:visited {
   font-size: 1.4rem;
   font-weight: 600;
   padding: 1.25rem 2.25rem;
   text-decoration: none;
 }
-.btn--small svg, .btn--small:link svg, .btn--small:visited svg {
+.btn--small svg,
+.btn--small:link svg,
+.btn--small:visited svg {
   height: 1.75rem;
   width: 1.75rem;
   fill: currentColor;
@@ -100,6 +110,7 @@ body {
   font-size: 1.3rem;
   font-weight: 600;
   border: none;
+  font-family: 'Nunito Sans', sans-serif;
   background-color: #f9f5f3;
   padding: 0.8rem 1.2rem;
   border-radius: 10rem;
@@ -351,12 +362,14 @@ body {
 .bookmarks__field:hover {
   background-color: #f2efee;
 }
-.bookmarks:hover, .nav__btn--bookmarks:hover + .bookmarks {
+.bookmarks:hover,
+.nav__btn--bookmarks:hover + .bookmarks {
   visibility: visible;
   opacity: 1;
 }
 
-.preview__link:link, .preview__link:visited {
+.preview__link:link,
+.preview__link:visited {
   display: flex;
   align-items: center;
   padding: 1.5rem 3.25rem;
@@ -381,7 +394,7 @@ body {
   backface-visibility: hidden;
 }
 .preview__fig::before {
-  content: "";
+  content: '';
   display: block;
   height: 100%;
   width: 100%;
@@ -455,7 +468,7 @@ body {
   padding: 0 3.5rem;
 }
 .pagination::after {
-  content: "";
+  content: '';
   display: table;
   clear: both;
 }
@@ -486,7 +499,7 @@ body {
   transform-origin: top;
 }
 .recipe__fig::before {
-  content: "";
+  content: '';
   display: block;
   height: 100%;
   width: 100%;
@@ -692,7 +705,7 @@ body {
   background-color: #f9f5f3;
 }
 .upload__column button {
-  grid-column: 1/span 2;
+  grid-column: 1 / span 2;
   justify-self: center;
   margin-top: 1rem;
 }

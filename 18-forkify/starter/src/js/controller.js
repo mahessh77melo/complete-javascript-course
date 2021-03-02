@@ -5,13 +5,17 @@ import {
   loadSearchResultPage,
   alterPage,
   updateServings,
+  addBookmark,
+  removeBookmark,
+  loadBookmarks,
 } from './model';
-import recipeView from './views/recipeView';
 import icons from 'url:../img/icons.svg'; // parcel 2 import
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
+import recipeView from './views/recipeView';
 import resultsView from './views/resultsView';
 import paginationView from './views/paginationView';
+import bookmarksView from './views/bookmarksView';
 
 // code begins
 const recipeContainer = document.querySelector('.recipe');
@@ -33,6 +37,9 @@ const controlRecipes = async function () {
 
     // updating the active recipe in the search results
     resultsView.updateActiveRecipe(state.recipe.id);
+
+    // loading the bookmarks from the localStorage
+    bookmarksView.render(state.bookmarks);
   } catch (error) {
     recipeView.renderError();
   }
@@ -88,11 +95,30 @@ const controlServings = function (diff) {
   recipeView.update(state.recipe);
 };
 
+// function to control the bookmarks UI
+const controlBookmarks = function (remove = false) {
+  // add bookmark function
+  remove ? removeBookmark(state.recipe) : addBookmark(state.recipe);
+  // refresh the ui
+  recipeView.update(state.recipe);
+  console.log(state.recipe);
+  bookmarksView.render(state.bookmarks);
+};
+
+// function to load and render the localStorage bookmark
+const loadLocalStorageBookmarks = function () {
+  loadBookmarks();
+  bookmarksView.render(state.bookmarks);
+};
+
 // initially called function
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);
   recipeView.addHandlerServings(controlServings);
-  searchBtn.addEventListener('click', controlSearchResults);
-  searchForm.addEventListener('submit', controlSearchResults);
+  recipeView.addHandlerAddBookmark(controlBookmarks);
+  bookmarksView.addBookmarkLoader(loadBookmarks);
+  resultsView.addHandlerSubmit(controlSearchResults);
+  resultsView.addHandlerClick(controlSearchResults);
+  window.addEventListener('load', loadLocalStorageBookmarks);
 };
 init();
