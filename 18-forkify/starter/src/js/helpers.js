@@ -1,6 +1,10 @@
 import { async } from 'regenerator-runtime';
 import { TIMEOUT_SEC } from './config';
 
+/**
+ * Promise that gets rejected after a certain time, (based on the argument given).
+ * @param {*} s
+ */
 const timeout = function (s) {
   return new Promise(function (_, reject) {
     setTimeout(function () {
@@ -8,6 +12,11 @@ const timeout = function (s) {
     }, s * 1000);
   });
 };
+
+/**
+ * Asynchronous function that takes in a url and returns the object after converting the JSON returned from the API request.
+ * @param {*} url
+ */
 export const getJSON = async function (url) {
   try {
     // promise.race between a 5 second timeout and the fetch function
@@ -21,6 +30,11 @@ export const getJSON = async function (url) {
   }
 };
 
+/**
+ * Async function that sends data to the api as a POST request and returns a JS object.
+ * @param {*} url
+ * @param {*} uploadData
+ */
 export const sendJSON = async function (url, uploadData) {
   try {
     // promise.race between a 5 second timeout and the fetch function

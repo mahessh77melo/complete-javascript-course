@@ -11,6 +11,10 @@ export const state = {
   bookmarks: [],
 };
 
+/**
+ * Returns a recipe object based on the parameters given to it.
+ * @param {*} obj
+ */
 const createRecipe = function (obj) {
   return {
     id: obj.id,
@@ -26,6 +30,10 @@ const createRecipe = function (obj) {
     ...(obj.key && { key: obj.key }),
   };
 };
+/**
+ * Fetches the recipe from the api and alters the state after converting it into a JS object.
+ * @param {*} id
+ */
 export const loadRecipe = async function (id) {
   try {
     const data = await getJSON(`${RECIPE_URL}/${id}`);
@@ -43,6 +51,10 @@ const isBookmarked = function (rec) {
   return res.length > 0 ? true : false;
 };
 
+/**
+ * Sends request to the api for the given query and alters the state with the results it got.
+ * @param {*} query
+ */
 export const loadSearchResults = async function (query) {
   try {
     const results = await getJSON(`${RECIPE_URL}?search=${query}`);
@@ -63,6 +75,10 @@ export const loadSearchResults = async function (query) {
   }
 };
 
+/**
+ * Returns the approptiate results based on the current page number.
+ * @param {*} page
+ */
 export const loadSearchResultPage = function (page = state.search.page) {
   const start = (page - 1) * RESULTS_PER_PAGE;
   const end = page * RESULTS_PER_PAGE;
@@ -109,6 +125,9 @@ const saveBookmarks = function () {
   localStorage.setItem('forkifyBookmarks', JSON.stringify(state.bookmarks));
 };
 
+/**
+ * Fetches the existing bookmarks that are stored in the browser's Local Storage.
+ */
 export const loadBookmarks = function () {
   let existingBookmarks = localStorage.forkifyBookmarks;
   if (!existingBookmarks) return;
@@ -116,13 +135,17 @@ export const loadBookmarks = function () {
   state.bookmarks = existingBookmarks;
 };
 
+/**
+ * Function to upload a new recipe. Sends a POST request to the api with the given object and the key. Also sets the returned object as the state's current recipe.
+ * @param {*} newRecipe
+ */
 export const uploadNewRecipe = async function (newRecipe) {
   const ingredients = Object.entries(newRecipe).filter(
     entry => entry[0].startsWith('ingredient') && entry[1] !== ''
   );
   const ingredientObjects = ingredients.map(ing => {
     const str = ing[1];
-    const ingArray = str.split(',');
+    const ingArray = str.split(',').map(el => el.trim());
     if (ingArray.length !== 3)
       throw new Error(
         'Wrong entry format, please follow the correct format for best results!'
@@ -137,9 +160,11 @@ export const uploadNewRecipe = async function (newRecipe) {
     publisher: newRecipe.publisher,
     servings: +newRecipe.servings,
     cooking_time: +newRecipe.cookingTime,
+    isBookmarked: true,
     ingredients: ingredientObjects,
   };
   const returnData = await sendJSON(`${RECIPE_URL}?key=${API_KEY}`, recipeObj);
+  // set this as the current recipe
   state.recipe = createRecipe(returnData.data.recipe);
   console.log(returnData);
 };

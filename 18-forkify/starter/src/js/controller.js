@@ -19,11 +19,9 @@ import paginationView from './views/paginationView';
 import bookmarksView from './views/bookmarksView';
 import addRecipeView from './views/addRecipeView';
 
-// code begins
-const recipeContainer = document.querySelector('.recipe');
-const searchBtn = document.querySelector('.search__btn');
-const searchForm = document.querySelector('.search');
-
+/**
+ * Controls the recipe View based on the hash in the url. Also updates the active recipe in the search results.
+ */
 const controlRecipes = async function () {
   try {
     // FETCHING THE hash
@@ -31,7 +29,7 @@ const controlRecipes = async function () {
     if (!id) return;
 
     // Loading the recipe (async function)
-    recipeView.renderSpinner(recipeContainer);
+    recipeView.renderSpinner();
     await loadRecipe(id);
 
     // RENDERING THE RECIPE TO THE UI
@@ -39,14 +37,15 @@ const controlRecipes = async function () {
 
     // updating the active recipe in the search results
     resultsView.updateActiveRecipe(state.recipe.id);
-
-    // loading the bookmarks from the localStorage
-    bookmarksView.render(state.bookmarks);
   } catch (error) {
     recipeView.renderError();
   }
 };
 
+/**
+ * Controller function for the search results. Refreshes the view according to the search results (if any).
+ * @param {*} e
+ */
 const controlSearchResults = async function (e) {
   try {
     // very important to prevent the default action
@@ -77,7 +76,9 @@ const controlSearchResults = async function (e) {
   }
 };
 
-// function to refresh the pagination and search results accordingly
+/**
+ * Function to refresh the pagination and search results accordingly
+ */
 const controlPagination = function () {
   // render the search results for the current page
   resultsView.renderResults(loadSearchResultPage(state.search.page));
@@ -89,7 +90,10 @@ const controlPagination = function () {
   resultsView.updateActiveRecipe(state.recipe.id);
 };
 
-// function to update the recipe based on the servings
+/**
+ * Function to update the recipe based on the servings
+ * @param {*} diff
+ */
 const controlServings = function (diff) {
   // update the recipe servings (in state)
   updateServings(state.recipe.servings + diff);
@@ -97,7 +101,10 @@ const controlServings = function (diff) {
   recipeView.update(state.recipe);
 };
 
-// function to control the bookmarks UI
+/**
+ * Function to control the bookmarks UI
+ * @param {*} remove
+ */
 const controlBookmarks = function (remove = false) {
   // add bookmark function
   remove ? removeBookmark(state.recipe) : addBookmark(state.recipe);
@@ -107,13 +114,22 @@ const controlBookmarks = function (remove = false) {
   bookmarksView.render(state.bookmarks);
 };
 
-// function to control adding of new recipes thru the api
+/**
+ * Function to control adding of new recipes thru the api
+ * @param {*} newRecipe
+ */
 const controlAddRecipe = async function (newRecipe) {
   try {
     // upload the new recipe via an API request
     await uploadNewRecipe(newRecipe);
     // RENDERING THE RECIPE TO THE UI
     recipeView.render(state.recipe);
+    // add the new recipe to bookmarks
+    addBookmark(state.recipe);
+    // update the bookmarks
+    bookmarksView.render(state.bookmarks);
+    // change ID in the url
+    window.history.pushState(null, '', `#${state.recipe.id}`);
     // close the window
     addRecipeView.toggleHidden();
   } catch (error) {
@@ -121,13 +137,17 @@ const controlAddRecipe = async function (newRecipe) {
   }
 };
 
-// function to load and render the localStorage bookmark
+/**
+ * Function to load and render the localStorage bookmark
+ */
 const loadLocalStorageBookmarks = function () {
   loadBookmarks();
   bookmarksView.render(state.bookmarks);
 };
 
-// initially called function
+/**
+ * Function that is initially called. This sets up everything for the effective functioning of the code.
+ */
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);
   recipeView.addHandlerServings(controlServings);
