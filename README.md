@@ -1,7 +1,7 @@
 This is the final project of the Udemy Course by Jonas Schmedtmann. 
 <br>
 
-Take a look at the [site](https://optimistic-mcnulty-1b6614.netlify.app/).
+Take a look at the [site](https://forkify-by-walter-white.netlify.app/).
 
 <br>
 
