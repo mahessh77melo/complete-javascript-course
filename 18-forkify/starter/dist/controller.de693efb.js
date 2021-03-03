@@ -483,32 +483,32 @@ var _addRecipeView = _interopRequireDefault(require("./views/addRecipeView"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// code begins
-const recipeContainer = document.querySelector('.recipe');
-const searchBtn = document.querySelector('.search__btn');
-const searchForm = document.querySelector('.search');
-
+/**
+ * Controls the recipe View based on the hash in the url. Also updates the active recipe in the search results.
+ */
 const controlRecipes = async function () {
   try {
     // FETCHING THE hash
     const id = window.location.hash?.slice(1);
     if (!id) return; // Loading the recipe (async function)
 
-    _recipeView.default.renderSpinner(recipeContainer);
+    _recipeView.default.renderSpinner();
 
     await (0, _model.loadRecipe)(id); // RENDERING THE RECIPE TO THE UI
 
     _recipeView.default.render(_model.state.recipe); // updating the active recipe in the search results
 
 
-    _resultsView.default.updateActiveRecipe(_model.state.recipe.id); // loading the bookmarks from the localStorage
-
-
-    _bookmarksView.default.render(_model.state.bookmarks);
+    _resultsView.default.updateActiveRecipe(_model.state.recipe.id);
   } catch (error) {
     _recipeView.default.renderError();
   }
 };
+/**
+ * Controller function for the search results. Refreshes the view according to the search results (if any).
+ * @param {*} e - Event
+ */
+
 
 const controlSearchResults = async function (e) {
   try {
@@ -536,7 +536,10 @@ const controlSearchResults = async function (e) {
 
     _resultsView.default.renderError(error.message);
   }
-}; // function to refresh the pagination and search results accordingly
+};
+/**
+ * Function to refresh the pagination and search results accordingly
+ */
 
 
 const controlPagination = function () {
@@ -548,7 +551,11 @@ const controlPagination = function () {
 
 
   _resultsView.default.updateActiveRecipe(_model.state.recipe.id);
-}; // function to update the recipe based on the servings
+};
+/**
+ * Function to update the recipe based on the servings
+ * @param {Number} diff The number that has to be added to the old servings count. (either positive or negative)
+ */
 
 
 const controlServings = function (diff) {
@@ -556,7 +563,11 @@ const controlServings = function (diff) {
   (0, _model.updateServings)(_model.state.recipe.servings + diff); // update the DOM (instead of re-rendering)
 
   _recipeView.default.update(_model.state.recipe);
-}; // function to control the bookmarks UI
+};
+/**
+ * Function to control the bookmarks UI
+ * @param {Boolean} remove false by default, but if true, adds the bookmark. If false, removes the recipe from the bookmarks.
+ */
 
 
 const controlBookmarks = function (remove = false) {
@@ -568,7 +579,11 @@ const controlBookmarks = function (remove = false) {
   console.log(_model.state.recipe);
 
   _bookmarksView.default.render(_model.state.bookmarks);
-}; // function to control adding of new recipes thru the api
+};
+/**
+ * Function to control adding of new recipes thru the api
+ * @param {Object} newRecipe - the new recipe object that has to be uploaded.
+ */
 
 
 const controlAddRecipe = async function (newRecipe) {
@@ -576,21 +591,34 @@ const controlAddRecipe = async function (newRecipe) {
     // upload the new recipe via an API request
     await (0, _model.uploadNewRecipe)(newRecipe); // RENDERING THE RECIPE TO THE UI
 
-    _recipeView.default.render(_model.state.recipe); // close the window
+    _recipeView.default.render(_model.state.recipe); // add the new recipe to bookmarks
 
+
+    (0, _model.addBookmark)(_model.state.recipe); // update the bookmarks
+
+    _bookmarksView.default.render(_model.state.bookmarks); // change ID in the url
+
+
+    window.history.pushState(null, '', `#${_model.state.recipe.id}`); // close the window
 
     _addRecipeView.default.toggleHidden();
   } catch (error) {
     alert(error);
   }
-}; // function to load and render the localStorage bookmark
+};
+/**
+ * Function to load and render the localStorage bookmark
+ */
 
 
 const loadLocalStorageBookmarks = function () {
   (0, _model.loadBookmarks)();
 
   _bookmarksView.default.render(_model.state.bookmarks);
-}; // initially called function
+};
+/**
+ * Function that is initially called. This sets up everything for the effective functioning of the code.
+ */
 
 
 const init = function () {
@@ -5276,6 +5304,11 @@ const state = {
   },
   bookmarks: []
 };
+/**
+ * Returns a recipe object based on the parameters given to it.
+ * @param {Object} obj - The unorganized recipe object.
+ */
+
 exports.state = state;
 
 const createRecipe = function (obj) {
@@ -5295,10 +5328,15 @@ const createRecipe = function (obj) {
     })
   };
 };
+/**
+ * Fetches the recipe from the api and alters the state after converting it into a JS object.
+ * @param {String} id - usually the hash (id of the recipe that has to be loaded).
+ */
+
 
 const loadRecipe = async function (id) {
   try {
-    const data = await (0, _helpers.getJSON)(`${_config.RECIPE_URL}/${id}`);
+    const data = await (0, _helpers.getJSON)(`${_config.RECIPE_URL}/${id}?key=${_config.API_KEY}`);
     const obj = data.data.recipe; //  altering the property names
 
     state.recipe = createRecipe(obj);
@@ -5315,10 +5353,15 @@ const isBookmarked = function (rec) {
   const res = state.bookmarks.filter(item => item.id === rec.id);
   return res.length > 0 ? true : false;
 };
+/**
+ * Sends request to the api for the given query and alters the state with the results it got.
+ * @param {String} query - Query string that was given in the input field
+ */
+
 
 const loadSearchResults = async function (query) {
   try {
-    const results = await (0, _helpers.getJSON)(`${_config.RECIPE_URL}?search=${query}`); // store the query for further use
+    const results = await (0, _helpers.getJSON)(`${_config.RECIPE_URL}?search=${query}&key=${_config.API_KEY}`); // store the query for further use
 
     state.search.query = query; // reset the page number
 
@@ -5328,13 +5371,21 @@ const loadSearchResults = async function (query) {
       id: rec.id,
       title: rec.title,
       image: rec.image_url,
-      publisher: rec.publisher
+      publisher: rec.publisher,
+      ...(rec.key && {
+        key: rec.key
+      })
     }));
     console.log(state.search);
   } catch (error) {
     throw error;
   }
 };
+/**
+ * Returns the approptiate results based on the current page number.
+ * @param {Number} page - The current page number.
+ */
+
 
 exports.loadSearchResults = loadSearchResults;
 
@@ -5363,6 +5414,11 @@ const updateServings = function (newServings) {
   });
   state.recipe.servings = newServings;
 };
+/**
+ * Adds a bookmarks to the state.
+ * @param {Object} recipe - Recipe to be added to the bookmarks.
+ */
+
 
 exports.updateServings = updateServings;
 
@@ -5376,6 +5432,11 @@ const addBookmark = function (recipe) {
 
   saveBookmarks();
 };
+/**
+ * Removes a bookmarks from the state.
+ * @param {Object} recipe - Recipe to be removed from the bookmarks.
+ */
+
 
 exports.addBookmark = addBookmark;
 
@@ -5395,6 +5456,10 @@ exports.removeBookmark = removeBookmark;
 const saveBookmarks = function () {
   localStorage.setItem('forkifyBookmarks', JSON.stringify(state.bookmarks));
 };
+/**
+ * Fetches the existing bookmarks that are stored in the browser's Local Storage.
+ */
+
 
 const loadBookmarks = function () {
   let existingBookmarks = localStorage.forkifyBookmarks;
@@ -5402,6 +5467,11 @@ const loadBookmarks = function () {
   existingBookmarks = JSON.parse(existingBookmarks);
   state.bookmarks = existingBookmarks;
 };
+/**
+ * Function to upload a new recipe. Sends a POST request to the api with the given object and the key. Also sets the returned object as the state's current recipe.
+ * @param {Object} newRecipe - the new recipe that has to be sent in the POST request for uploading.
+ */
+
 
 exports.loadBookmarks = loadBookmarks;
 
@@ -5409,7 +5479,7 @@ const uploadNewRecipe = async function (newRecipe) {
   const ingredients = Object.entries(newRecipe).filter(entry => entry[0].startsWith('ingredient') && entry[1] !== '');
   const ingredientObjects = ingredients.map(ing => {
     const str = ing[1];
-    const ingArray = str.split(',');
+    const ingArray = str.split(',').map(el => el.trim());
     if (ingArray.length !== 3) throw new Error('Wrong entry format, please follow the correct format for best results!');
     const [quantity, unit, description] = ingArray;
     return {
@@ -5425,9 +5495,11 @@ const uploadNewRecipe = async function (newRecipe) {
     publisher: newRecipe.publisher,
     servings: +newRecipe.servings,
     cooking_time: +newRecipe.cookingTime,
+    isBookmarked: true,
     ingredients: ingredientObjects
   };
-  const returnData = await (0, _helpers.sendJSON)(`${_config.RECIPE_URL}?key=${_config.API_KEY}`, recipeObj);
+  const returnData = await (0, _helpers.sendJSON)(`${_config.RECIPE_URL}?key=${_config.API_KEY}`, recipeObj); // set this as the current recipe
+
   state.recipe = createRecipe(returnData.data.recipe);
   console.log(returnData);
 };
@@ -5464,6 +5536,10 @@ var _regeneratorRuntime = require("regenerator-runtime");
 
 var _config = require("./config");
 
+/**
+ * Promise that gets rejected after a certain time, (based on the argument given).
+ * @param {Number} s - number of seconds the timeout should last.
+ */
 const timeout = function (s) {
   return new Promise(function (_, reject) {
     setTimeout(function () {
@@ -5471,6 +5547,11 @@ const timeout = function (s) {
     }, s * 1000);
   });
 };
+/**
+ * Asynchronous function that takes in a url and returns the object after converting the JSON returned from the API request.
+ * @param {String} url - The url to which the GET request should be sent.
+ */
+
 
 const getJSON = async function (url) {
   try {
@@ -5484,6 +5565,12 @@ const getJSON = async function (url) {
     throw error;
   }
 };
+/**
+ * Async function that sends data to the api as a POST request and returns a JS object.
+ * @param {String} url - The url to which the POST request should be sent.
+ * @param {Object} uploadData - The data to be uploaded. (JS object)
+ */
+
 
 exports.getJSON = getJSON;
 
@@ -6465,7 +6552,7 @@ var _generateMarkup2 = function _generateMarkup2() {
             </div>
           </div>
 
-          <div class="recipe__user-generated">
+          <div class="recipe__user-generated ${recipe.key ? '' : 'hidden'}">
             <svg>
               <use href="${_icons.default}#icon-user"></use>
             </svg>
@@ -6995,6 +7082,8 @@ class ResultsView {
 
 
   renderResults(recipes) {
+    console.log(recipes);
+
     _classPrivateMethodGet(this, _clear, _clear2).call(this);
 
     recipes.forEach(rec => {
@@ -7007,7 +7096,7 @@ class ResultsView {
               <div class="preview__data">
                 <h4 class="preview__title">${rec.title}</h4>
                 <p class="preview__publisher">${rec.publisher}</p>
-                <div class="preview__user-generated">
+                <div class="preview__user-generated ${rec.key ? '' : 'hidden'}">
                   <svg>
                     <use href="${_icons.default}#icon-user"></use>
                   </svg>

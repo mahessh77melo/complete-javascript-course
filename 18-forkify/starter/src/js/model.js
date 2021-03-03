@@ -36,7 +36,7 @@ const createRecipe = function (obj) {
  */
 export const loadRecipe = async function (id) {
   try {
-    const data = await getJSON(`${RECIPE_URL}/${id}`);
+    const data = await getJSON(`${RECIPE_URL}/${id}?key=${API_KEY}`);
     const obj = data.data.recipe;
     //  altering the property names
     state.recipe = createRecipe(obj);
@@ -57,7 +57,9 @@ const isBookmarked = function (rec) {
  */
 export const loadSearchResults = async function (query) {
   try {
-    const results = await getJSON(`${RECIPE_URL}?search=${query}`);
+    const results = await getJSON(
+      `${RECIPE_URL}?search=${query}&key=${API_KEY}`
+    );
     // store the query for further use
     state.search.query = query;
     // reset the page number
@@ -68,6 +70,7 @@ export const loadSearchResults = async function (query) {
       title: rec.title,
       image: rec.image_url,
       publisher: rec.publisher,
+      ...(rec.key && { key: rec.key }),
     }));
     console.log(state.search);
   } catch (error) {
