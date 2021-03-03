@@ -101,6 +101,10 @@ export const updateServings = function (newServings) {
   state.recipe.servings = newServings;
 };
 
+/**
+ * Adds a bookmarks to the state.
+ * @param {Object} recipe - Recipe to be added to the bookmarks.
+ */
 export const addBookmark = function (recipe) {
   // Add the bookmarks to the state
   state.bookmarks.push(recipe);
@@ -111,6 +115,10 @@ export const addBookmark = function (recipe) {
   saveBookmarks();
 };
 
+/**
+ * Removes a bookmarks from the state.
+ * @param {Object} recipe - Recipe to be removed from the bookmarks.
+ */
 export const removeBookmark = function (recipe) {
   // remove the bookmarks from the state
   state.bookmarks = state.bookmarks.filter(rec => rec.id !== recipe.id);
