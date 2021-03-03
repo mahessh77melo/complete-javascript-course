@@ -44,7 +44,7 @@ const controlRecipes = async function () {
 
 /**
  * Controller function for the search results. Refreshes the view according to the search results (if any).
- * @param {*} e
+ * @param {*} e - Event
  */
 const controlSearchResults = async function (e) {
   try {
@@ -92,7 +92,7 @@ const controlPagination = function () {
 
 /**
  * Function to update the recipe based on the servings
- * @param {*} diff
+ * @param {Number} diff The number that has to be added to the old servings count. (either positive or negative)
  */
 const controlServings = function (diff) {
   // update the recipe servings (in state)
@@ -103,7 +103,7 @@ const controlServings = function (diff) {
 
 /**
  * Function to control the bookmarks UI
- * @param {*} remove
+ * @param {Boolean} remove false by default, but if true, adds the bookmark. If false, removes the recipe from the bookmarks.
  */
 const controlBookmarks = function (remove = false) {
   // add bookmark function
@@ -116,7 +116,7 @@ const controlBookmarks = function (remove = false) {
 
 /**
  * Function to control adding of new recipes thru the api
- * @param {*} newRecipe
+ * @param {Object} newRecipe - the new recipe object that has to be uploaded.
  */
 const controlAddRecipe = async function (newRecipe) {
   try {

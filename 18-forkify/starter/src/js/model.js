@@ -13,7 +13,7 @@ export const state = {
 
 /**
  * Returns a recipe object based on the parameters given to it.
- * @param {*} obj
+ * @param {Object} obj - The unorganized recipe object.
  */
 const createRecipe = function (obj) {
   return {
@@ -32,7 +32,7 @@ const createRecipe = function (obj) {
 };
 /**
  * Fetches the recipe from the api and alters the state after converting it into a JS object.
- * @param {*} id
+ * @param {String} id - usually the hash (id of the recipe that has to be loaded).
  */
 export const loadRecipe = async function (id) {
   try {
@@ -53,7 +53,7 @@ const isBookmarked = function (rec) {
 
 /**
  * Sends request to the api for the given query and alters the state with the results it got.
- * @param {*} query
+ * @param {String} query - Query string that was given in the input field
  */
 export const loadSearchResults = async function (query) {
   try {
@@ -77,7 +77,7 @@ export const loadSearchResults = async function (query) {
 
 /**
  * Returns the approptiate results based on the current page number.
- * @param {*} page
+ * @param {Number} page - The current page number.
  */
 export const loadSearchResultPage = function (page = state.search.page) {
   const start = (page - 1) * RESULTS_PER_PAGE;
@@ -137,7 +137,7 @@ export const loadBookmarks = function () {
 
 /**
  * Function to upload a new recipe. Sends a POST request to the api with the given object and the key. Also sets the returned object as the state's current recipe.
- * @param {*} newRecipe
+ * @param {Object} newRecipe - the new recipe that has to be sent in the POST request for uploading.
  */
 export const uploadNewRecipe = async function (newRecipe) {
   const ingredients = Object.entries(newRecipe).filter(

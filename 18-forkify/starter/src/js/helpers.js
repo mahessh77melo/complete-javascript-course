@@ -3,7 +3,7 @@ import { TIMEOUT_SEC } from './config';
 
 /**
  * Promise that gets rejected after a certain time, (based on the argument given).
- * @param {*} s
+ * @param {Number} s - number of seconds the timeout should last.
  */
 const timeout = function (s) {
   return new Promise(function (_, reject) {
@@ -15,7 +15,7 @@ const timeout = function (s) {
 
 /**
  * Asynchronous function that takes in a url and returns the object after converting the JSON returned from the API request.
- * @param {*} url
+ * @param {String} url - The url to which the GET request should be sent.
  */
 export const getJSON = async function (url) {
   try {
@@ -32,8 +32,8 @@ export const getJSON = async function (url) {
 
 /**
  * Async function that sends data to the api as a POST request and returns a JS object.
- * @param {*} url
- * @param {*} uploadData
+ * @param {String} url - The url to which the POST request should be sent.
+ * @param {Object} uploadData - The data to be uploaded. (JS object)
  */
 export const sendJSON = async function (url, uploadData) {
   try {
